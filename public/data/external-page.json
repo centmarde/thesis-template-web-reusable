@@ -1,42 +1,51 @@
 {
-  "title": "Auto Attendance System",
-  "description": "A modern, automated attendance tracking system built with Vue 3 and Vuetify 3, featuring QR code scanning technology for seamless attendance management.",
-  "subtitle": "Revolutionize Attendance Tracking with QR Code Technology",
+  "title": "Vue 3 + Vuetify 3 Thesis Template",
+  "description": "A modern, reusable thesis template built with Vue 3 and Vuetify 3, featuring TypeScript and zero-config development with extensive plugin automation.",
+  "subtitle": "Streamline Your Academic Writing with Modern Web Technologies",
+  "backgroundImage": {
+    "src": "/images/markup.png",
+    "alt": "Abstract academic background with geometric patterns",
+    "overlay": {
+      "enabled": true,
+      "color": "rgba(85, 107, 47, 0.1)",
+      "opacity": 0.8
+    }
+  },
   "features": [
     {
-      "title": "QR Code Scanning",
-      "description": "Quick and contactless attendance marking through QR code scanning with mobile-optimized interface.",
-      "icon": "mdi-qrcode-scan"
+      "title": "Zero-Config Development",
+      "description": "File-based auto-generation for pages, components, and layouts with minimal configuration required.",
+      "icon": "mdi-cog-outline"
     },
     {
-      "title": "Real-time Tracking",
-      "description": "Live attendance monitoring with instant updates and notifications for administrators and users.",
-      "icon": "mdi-clock-time-four-outline"
+      "title": "Modern Vue 3 Stack",
+      "description": "Built on Vue 3 Composition API with TypeScript, Pinia state management, and Vuetify 3 components.",
+      "icon": "mdi-vuejs"
     },
     {
-      "title": "Automated Reports",
-      "description": "Generate comprehensive attendance reports with analytics, trends, and exportable data formats.",
-      "icon": "mdi-chart-line"
+      "title": "Authentication Ready",
+      "description": "Supabase integration with reactive authentication state and user management.",
+      "icon": "mdi-account-check"
     },
     {
-      "title": "Multi-Platform Access",
-      "description": "Cross-platform compatibility with responsive design for desktop, tablet, and mobile devices.",
-      "icon": "mdi-devices"
+      "title": "Responsive Design",
+      "description": "Mobile-first approach with Vuetify's Material Design components and responsive layouts.",
+      "icon": "mdi-responsive"
     }
   ],
   "version": "1.0.0",
-  "author": "Auto Attendance Team",
+  "author": "Thesis Template Team",
   "lastUpdated": "2025-09-03",
   "theme": {
-    "primaryColor": "#1976D2",
-    "secondaryColor": "#E3F2FD"
+    "primaryColor": "#556B2F",
+    "secondaryColor": "#DCDCDC"
   },
   "ui": {
     "showNavbar": true,
     "showFooter": true,
     "navbar": {
-      "title": "Auto Attendance",
-      "icon": "mdi-qrcode-scan",
+      "title": "Thesis Template",
+      "icon": "mdi-school",
       "color": "primary",
       "elevation": 2,
       "density": "comfortable",
@@ -53,7 +62,7 @@
         }
       ],
       "ctaButton": {
-        "label": "Start Scanning",
+        "label": "Get Started",
         "variant": "outlined",
         "color": "on-primary",
         "action": "navigate",
@@ -61,11 +70,11 @@
       }
     },
     "footer": {
-      "companyName": "Auto Attendance System",
-      "tagline": "Smart attendance tracking made simple",
-      "icon": "mdi-qrcode-scan",
+      "companyName": "Thesis Template",
+      "tagline": "Modern academic writing made simple",
+      "icon": "mdi-school",
       "color": "grey-darken-3",
-      "copyright": "Auto Attendance Team. All rights reserved.",
+      "copyright": "Thesis Template Team. All rights reserved.",
       "socialLinks": [
         {
           "platform": "github",

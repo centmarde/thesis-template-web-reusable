@@ -67,10 +67,21 @@ export interface ThemeConfig {
   secondaryColor: string
 }
 
+export interface BackgroundImage {
+  src: string
+  alt: string
+  overlay: {
+    enabled: boolean
+    color: string
+    opacity: number
+  }
+}
+
 export interface LandingData {
   title: string
   description: string
   subtitle: string
+  backgroundImage: BackgroundImage
   features: Feature[]
   version: string
   author: string
@@ -119,6 +130,15 @@ export function useLandingController (): LandingController {
         title: 'Vue 3 + Vuetify 3 Thesis Template',
         description: 'A modern, reusable thesis template built with Vue 3 and Vuetify 3.',
         subtitle: 'Streamline Your Academic Writing',
+        backgroundImage: {
+          src: '/images/landing-background.jpg',
+          alt: 'Abstract academic background',
+          overlay: {
+            enabled: true,
+            color: 'rgba(85, 107, 47, 0.1)',
+            opacity: 0.8
+          }
+        },
         features: [
           {
             title: 'Zero-Config Development',
