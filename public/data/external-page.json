@@ -1,0 +1,103 @@
+{
+  "title": "Auto Attendance System",
+  "description": "A modern, automated attendance tracking system built with Vue 3 and Vuetify 3, featuring QR code scanning technology for seamless attendance management.",
+  "subtitle": "Revolutionize Attendance Tracking with QR Code Technology",
+  "features": [
+    {
+      "title": "QR Code Scanning",
+      "description": "Quick and contactless attendance marking through QR code scanning with mobile-optimized interface.",
+      "icon": "mdi-qrcode-scan"
+    },
+    {
+      "title": "Real-time Tracking",
+      "description": "Live attendance monitoring with instant updates and notifications for administrators and users.",
+      "icon": "mdi-clock-time-four-outline"
+    },
+    {
+      "title": "Automated Reports",
+      "description": "Generate comprehensive attendance reports with analytics, trends, and exportable data formats.",
+      "icon": "mdi-chart-line"
+    },
+    {
+      "title": "Multi-Platform Access",
+      "description": "Cross-platform compatibility with responsive design for desktop, tablet, and mobile devices.",
+      "icon": "mdi-devices"
+    }
+  ],
+  "version": "1.0.0",
+  "author": "Auto Attendance Team",
+  "lastUpdated": "2025-09-03",
+  "theme": {
+    "primaryColor": "#1976D2",
+    "secondaryColor": "#E3F2FD"
+  },
+  "ui": {
+    "showNavbar": true,
+    "showFooter": true,
+    "navbar": {
+      "title": "Auto Attendance",
+      "icon": "mdi-qrcode-scan",
+      "color": "primary",
+      "elevation": 2,
+      "density": "comfortable",
+      "navigationItems": [
+        {
+          "label": "Features",
+          "action": "scroll",
+          "target": "features"
+        },
+        {
+          "label": "About",
+          "action": "scroll",
+          "target": "about"
+        }
+      ],
+      "ctaButton": {
+        "label": "Start Scanning",
+        "variant": "outlined",
+        "color": "on-primary",
+        "action": "navigate",
+        "target": "/auth"
+      }
+    },
+    "footer": {
+      "companyName": "Auto Attendance System",
+      "tagline": "Smart attendance tracking made simple",
+      "icon": "mdi-qrcode-scan",
+      "color": "grey-darken-3",
+      "copyright": "Auto Attendance Team. All rights reserved.",
+      "socialLinks": [
+        {
+          "platform": "github",
+          "icon": "mdi-github",
+          "url": "https://github.com",
+          "label": "GitHub"
+        },
+        {
+          "platform": "twitter",
+          "icon": "mdi-twitter",
+          "url": "https://twitter.com",
+          "label": "Twitter"
+        },
+        {
+          "platform": "linkedin",
+          "icon": "mdi-linkedin",
+          "url": "https://linkedin.com",
+          "label": "LinkedIn"
+        }
+      ],
+      "technologies": [
+        {
+          "name": "Vue 3",
+          "icon": "mdi-vuejs",
+          "color": "green"
+        },
+        {
+          "name": "Vuetify 3",
+          "icon": "mdi-material-design",
+          "color": "blue"
+        }
+      ]
+    }
+  }
+}
