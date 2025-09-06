@@ -88,8 +88,8 @@
               variant="elevated"
               size="large"
               block
-              :loading="loading"
-              :disabled="!formValid || loading"
+              :loading="isLoading"
+              :disabled="!formValid || isLoading"
               class="mb-4"
             >
               Create Account
@@ -148,6 +148,9 @@ const formValid = ref(false);
 const loading = ref(false);
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
+
+// Computed
+const isLoading = computed(() => loading.value || authStore.loading);
 
 // Form data
 const registerForm = reactive({
@@ -211,7 +214,7 @@ const handleRegister = async () => {
         "Account created successfully! Please check your email to verify your account."
       );
       resetForm();
-      // Optionally switch to login form or redirect
+      // Emit to switch to login form
       // $emit('switch-to-login')
     }
   } catch (error: any) {

@@ -46,8 +46,8 @@
               variant="elevated"
               size="large"
               block
-              :loading="loading"
-              :disabled="!formValid || loading"
+              :loading="isLoading"
+              :disabled="!formValid || isLoading"
               class="mb-4"
             >
               Sign In
@@ -115,6 +115,7 @@ const errors = reactive({
 });
 
 // Computed
+const isLoading = computed(() => loading.value || authStore.loading);
 const passwordLabel = "Password";
 
 // Methods
@@ -135,8 +136,7 @@ const handleLogin = async () => {
   try {
     const result = await authStore.signIn(
       loginForm.email,
-      loginForm.password,
-      false
+      loginForm.password
     );
 
     if (result.error) {
@@ -151,6 +151,7 @@ const handleLogin = async () => {
       }
     } else {
       toast.success("Login successful!");
+      resetForm();
       router.push("/");
     }
   } catch (error: any) {

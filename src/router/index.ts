@@ -3,13 +3,11 @@ import { setupLayouts } from 'virtual:generated-layouts';
 import { useToast } from 'vue-toastification';
 import { createRouter, createWebHistory } from 'vue-router';
 import type { RouteLocationNormalized, NavigationGuardNext } from 'vue-router';
-import { useAuthUserStore } from '@/stores/authUser';
 
 import Hero from '@/pages/index.vue';
 import Auth from '@/pages/Auth.vue';
+import Home from '@/pages/Home.vue';
 import NotFound from '@/pages/NotFound.vue';
-
-const toast = useToast();
 
 const routes = setupLayouts([
   { path: '/', component: Hero },
@@ -18,13 +16,14 @@ const routes = setupLayouts([
     component: Auth,
   },
   {
-    path: '/404',
-    name: 'NotFound',
-    component: NotFound,
+    path: '/home',
+    component: Home,
+    meta: { requiresAuth: true }
   },
   {
     path: '/:pathMatch(.*)*',
-    redirect: '/404'
+    name: 'NotFound',
+    component: NotFound,
   },
 ]);
 
@@ -34,23 +33,20 @@ const router = createRouter({
 });
 
 router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
-  const authStore = useAuthUserStore();
-  const isLoggedIn = localStorage.getItem("access_token") !== null || authStore.userData !== null;
-  const publicPages = ["/"];
+  const isLoggedIn = localStorage.getItem("access_token") !== null;
+  const publicPages = ["/", "/auth"];
   const protectedPages = ["/home", "/admin", "/profiles"];
+  const toast = useToast();
 
-  // Check if user is already authenticated and trying to access auth page
-  if (to.path === "/auth" && isLoggedIn) {
-    toast.info("You are already logged in.");
-    return next("/");
-  }
-
+  // If user is not authenticated and trying to access protected page
   if (to.meta.requiresAuth && !isLoggedIn) {
-    toast.error("Authentication is required to access this page.");
+    /* toast.error("Authentication is required to access this page."); */
     return next("/auth");
   }
 
-  if (publicPages.includes(to.path) && isLoggedIn) {
+  // If user is authenticated and trying to access public/auth pages, redirect to home
+  if (isLoggedIn && publicPages.includes(to.path)) {
+   /*  toast.info("You are already logged in. Redirecting to home."); */
     return next("/home");
   }
 
