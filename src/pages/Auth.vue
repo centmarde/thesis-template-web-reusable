@@ -210,7 +210,7 @@ onMounted(async () => {
 
             <v-btn
               variant="text"
-              color="secondary"
+              color="light"
               size="small"
               @click="toggleMode"
             >

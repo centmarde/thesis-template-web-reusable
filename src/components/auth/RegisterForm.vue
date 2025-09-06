@@ -84,7 +84,7 @@
           <v-col cols="12">
             <v-btn
               type="submit"
-              color="light"
+              color="primary"
               variant="elevated"
               size="large"
               block

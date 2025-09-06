@@ -53,11 +53,13 @@
       "density": "comfortable",
       "navigationItems": [
         {
+          "_comment": "dont change this",
           "label": "Features",
           "action": "scroll",
           "target": "features"
         },
         {
+          "_comment": "dont change this",
           "label": "About",
           "action": "scroll",
           "target": "about"
@@ -68,6 +70,7 @@
         "variant": "outlined",
         "color": "on-primary",
         "action": "navigate",
+        "_comment": "dont change this /auth cause it is linked to the auth page",
         "target": "/auth"
       }
     },
@@ -123,7 +126,6 @@
       "source": "Ancient Wisdom",
       "motivationalText": "Start your journey today. Every great achievement begins with a single step forward."
     },
-    
     "backgroundImage": {
       "src": "/images/auth-background.jpg",
       "alt": "Academic workspace with books and laptop",
