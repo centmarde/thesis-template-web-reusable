@@ -25,7 +25,7 @@
   }
 
   function openDocumentation () {
-    window.open('https://vuetifyjs.com/', '_blank', 'noopener,noreferrer')
+    window.open('https://owasp.org/www-project-top-ten/', '_blank', 'noopener,noreferrer')
   }
 
   function formatDate (dateString: string) {
@@ -131,8 +131,8 @@
                           variant="elevated"
                           @click="scrollToFeatures"
                         >
-                          <v-icon class="me-2" icon="mdi-rocket-launch" />
-                          Explore Features
+                          <v-icon class="me-2" icon="mdi-shield-search" />
+                          Explore Protection
                         </v-btn>
 
                         <v-btn
@@ -156,9 +156,9 @@
             <section id="features" class="features-section py-16">
               <v-container>
                 <div class="text-center mb-12">
-                  <h2 class="text-h3 font-weight-bold mb-4">Key Features</h2>
+                  <h2 class="text-h3 font-weight-bold mb-4">Security Features</h2>
                   <p class="text-h6 text-grey-darken-1">
-                    Everything you need for modern academic writing
+                    Advanced ML-powered protection against SQL injection attacks
                   </p>
                 </div>
 
@@ -197,17 +197,17 @@
                   <v-col cols="12" lg="8" md="10">
                     <div class="text-center">
                       <h2 class="text-h3 font-weight-bold mb-6">
-                        About This Template
+                        About Hackwise Security
                       </h2>
 
-                      <v-card class="pa-8" elevation="4">
+                      <div class="pa-8" elevation="4">
                         <v-row align="center">
                           <v-col cols="12" md="8">
                             <h3 class="text-h4 font-weight-bold mb-4">
                               Version {{ data.version }}
                             </h3>
                             <p class="text-h6 text-grey-darken-1 mb-4">
-                              Created by {{ data.author }}
+                              Developed by {{ data.author }}
                             </p>
                             <p class="text-body-1 text-grey-darken-2">
                               Last updated: {{ formatDate(data.lastUpdated) }}
@@ -223,12 +223,12 @@
                               variant="elevated"
                               @click="openDocumentation"
                             >
-                              <v-icon class="me-2" icon="mdi-book-open" />
-                              Documentation
+                              <v-icon class="me-2" icon="mdi-security" />
+                              Security Guide
                             </v-btn>
                           </v-col>
                         </v-row>
-                      </v-card>
+                      </div>
                     </div>
                   </v-col>
                 </v-row>

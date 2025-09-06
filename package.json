@@ -13,6 +13,7 @@
   "dependencies": {
     "@fontsource/roboto": "5.2.6",
     "@mdi/font": "7.4.47",
+    "@supabase/supabase-js": "^2.57.2",
     "axios": "^1.11.0",
     "pinia": "^3.0.3",
     "vite-plugin-vue-devtools": "^8.0.1",
@@ -39,4 +40,3 @@
     "vue-tsc": "^3.0.1"
   }
 }
-

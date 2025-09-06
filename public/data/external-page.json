@@ -108,5 +108,28 @@
         }
       ]
     }
+  },
+  "authPage": {
+    "title": "Welcome to Your Academic Journey",
+    "subtitle": "Access your thesis template workspace",
+    "layout": {
+      "quotePosition": "right"
+    },
+    "quote": {
+      "text": "The best time to plant a tree was 20 years ago. The second best time is now.",
+      "author": "Chinese Proverb",
+      "source": "Ancient Wisdom",
+      "motivationalText": "Start your journey today. Every great achievement begins with a single step forward."
+    },
+    
+    "backgroundImage": {
+      "src": "/images/auth-background.jpg",
+      "alt": "Academic workspace with books and laptop",
+      "overlay": {
+        "enabled": true,
+        "color": "rgba(85, 107, 47, 0.05)",
+        "opacity": 0.9
+      }
+    }
   }
 }
