@@ -22,14 +22,22 @@
       <slot name="content"></slot>
     </v-main>
 
-    <!-- Outer Footer -->
-    <OuterFooter :config="data?.ui" />
+    <!-- Dynamic Footer Selection -->
+    <OuterFooter
+      v-if="data?.ui?.footerComponent === '1'"
+      :config="data?.ui"
+    />
+    <OuterFooter2
+      v-else-if="data?.ui?.footerComponent === '2'"
+      :config="data?.ui"
+    />
   </v-app>
 </template>
 
 <script lang="ts" setup>
   import { onMounted } from 'vue'
-  import OuterFooter from '@/components/common/OuterFooter.vue'
+  import OuterFooter from '@/components/common/outerFooters/OuterFooter.vue'
+  import OuterFooter2 from '@/components/common/outerFooters/OuterFooter2.vue'
   import OuterNavbar from '@/components/common/outerNavbars/OuterNavbar.vue'
   import OuterNavbar2 from '@/components/common/outerNavbars/OuterNavbar2.vue'
   import OuterNavbar3 from '@/components/common/outerNavbars/OuterNavbar3.vue'

@@ -45,6 +45,8 @@
     "showFooter": true,
     "_comment": "Select the navbar component to use: 1, 2, 3, or 4",
     "navbarComponent": "4",
+    "_footerComment": "Select the footer component to use: 1 or 2",
+    "footerComponent": "2",
     "navbar": {
       "title": "Thesis Template",
       "icon": "mdi-school",
@@ -117,7 +119,29 @@
           "icon": "mdi-material-design",
           "color": "blue"
         }
-      ]
+      ],
+      "thesisTeam": {
+        "enabled": true,
+        "title": "Thesis Team",
+        "subtitle": "Meet the minds behind your academic success",
+        "members": [
+          {
+            "name": "Dr. Sarah Johnson",
+            "role": "Lead Researcher",
+            "avatar": "/images/team/sarah.jpg"
+          },
+          {
+            "name": "Prof. Michael Chen",
+            "role": "Academic Advisor",
+            "avatar": "/images/team/michael.jpg"
+          },
+          {
+            "name": "Emma Rodriguez",
+            "role": "Writing Specialist",
+            "avatar": "/images/team/emma.jpg"
+          }
+        ]
+      }
     }
   },
   "authPage": {
