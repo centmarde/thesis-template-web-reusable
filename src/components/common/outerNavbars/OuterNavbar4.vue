@@ -222,6 +222,7 @@
             :loading="isLoadingTheme"
             @click="toggleTheme"
           >
+          <v-icon></v-icon>
             <v-tooltip activator="parent" location="bottom">
               {{ themeTooltip }}
             </v-tooltip>
