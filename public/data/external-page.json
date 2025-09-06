@@ -43,6 +43,8 @@
   "ui": {
     "showNavbar": true,
     "showFooter": true,
+    "_comment": "Select the navbar component to use: 1, 2, 3, or 4",
+    "navbarComponent": "3",
     "navbar": {
       "title": "Thesis Template",
       "icon": "mdi-school",
@@ -51,11 +53,13 @@
       "density": "comfortable",
       "navigationItems": [
         {
+          "_comment": "dont change this",
           "label": "Features",
           "action": "scroll",
           "target": "features"
         },
         {
+          "_comment": "dont change this",
           "label": "About",
           "action": "scroll",
           "target": "about"
@@ -66,6 +70,7 @@
         "variant": "outlined",
         "color": "on-primary",
         "action": "navigate",
+        "_comment": "dont change this /auth cause it is linked to the auth page",
         "target": "/auth"
       }
     },
@@ -107,6 +112,28 @@
           "color": "blue"
         }
       ]
+    }
+  },
+  "authPage": {
+    "title": "Welcome to Your Academic Journey",
+    "subtitle": "Access your thesis template workspace",
+    "layout": {
+      "quotePosition": "right"
+    },
+    "quote": {
+      "text": "The best time to plant a tree was 20 years ago. The second best time is now.",
+      "author": "Chinese Proverb",
+      "source": "Ancient Wisdom",
+      "motivationalText": "Start your journey today. Every great achievement begins with a single step forward."
+    },
+    "backgroundImage": {
+      "src": "/images/auth-background.jpg",
+      "alt": "Academic workspace with books and laptop",
+      "overlay": {
+        "enabled": true,
+        "color": "rgba(85, 107, 47, 0.05)",
+        "opacity": 0.9
+      }
     }
   }
 }

@@ -218,3 +218,14 @@ export const compareDatesValidator = (
 
   return comparisons[operator] || messages[operator];
 }
+
+// 👉 Safe Error Message Extractor for Supabase errors
+export const getErrorMessage = (error: string | { message?: string } | null | undefined): string => {
+  if (!error) return 'An unknown error occurred';
+
+  if (typeof error === 'string') return error;
+
+  if (typeof error === 'object' && error.message) return error.message;
+
+  return 'An unknown error occurred';
+}

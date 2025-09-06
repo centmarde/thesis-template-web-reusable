@@ -58,6 +58,7 @@ export interface FooterConfig {
 export interface UIConfig {
   showNavbar: boolean
   showFooter: boolean
+  navbarComponent: '1' | '2' | '3' | '4'
   navbar: NavbarConfig
   footer: FooterConfig
 }
@@ -125,82 +126,7 @@ export function useLandingController (): LandingController {
       console.error('Failed to fetch landing data:', error_)
       error.value = error_ instanceof Error ? error_.message : 'Unknown error occurred'
 
-      // Fallback data in case of error
-      data.value = {
-        title: 'Vue 3 + Vuetify 3 Thesis Template',
-        description: 'A modern, reusable thesis template built with Vue 3 and Vuetify 3.',
-        subtitle: 'Streamline Your Academic Writing',
-        backgroundImage: {
-          src: '/images/landing-background.jpg',
-          alt: 'Abstract academic background',
-          overlay: {
-            enabled: true,
-            color: 'rgba(85, 107, 47, 0.1)',
-            opacity: 0.8
-          }
-        },
-        features: [
-          {
-            title: 'Zero-Config Development',
-            description: 'File-based auto-generation with minimal configuration.',
-            icon: 'mdi-cog-outline',
-          },
-        ],
-        version: '1.0.0',
-        author: 'Thesis Template Team',
-        lastUpdated: new Date().toISOString().split('T')[0],
-        theme: {
-          primaryColor: '#556B2F',
-          secondaryColor: '#EFF5D2',
-        },
-        ui: {
-          showNavbar: true,
-          showFooter: true,
-          navbar: {
-            title: 'Thesis Template',
-            icon: 'mdi-school',
-            color: 'primary',
-            elevation: 2,
-            density: 'comfortable',
-            navigationItems: [
-              {
-                label: 'Features',
-                action: 'scroll',
-                target: 'features',
-              },
-            ],
-            ctaButton: {
-              label: 'Get Started',
-              variant: 'outlined',
-              color: 'white',
-              action: 'navigate',
-              target: '/auth',
-            },
-          },
-          footer: {
-            companyName: 'Thesis Template',
-            tagline: 'Modern academic writing made simple',
-            icon: 'mdi-school',
-            color: 'grey-darken-3',
-            copyright: 'Thesis Template Team. All rights reserved.',
-            socialLinks: [
-              {
-                platform: 'github',
-                icon: 'mdi-github',
-                url: 'https://github.com',
-                label: 'GitHub',
-              },
-            ],
-            technologies: [
-              {
-                name: 'Vue 3',
-                icon: 'mdi-vuejs',
-                color: 'green',
-              },
-            ],
-          },
-        },
-      }
+      data.value = null
     } finally {
       loading.value = false
     }

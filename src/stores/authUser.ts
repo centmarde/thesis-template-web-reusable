@@ -3,15 +3,12 @@ import type { Ref } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { supabase } from "@/lib/supabase";
-import { useToast } from "vue-toastification";
-
-const toast = useToast();
 interface UserData {
   id?: string;
   email?: string;
   created_at?: string;
-  username: string | null;
-  profile_image: string | null;
+  user_metadata?: Record<string, any>;
+  app_metadata?: Record<string, any>;
 }
 
 interface SessionUser {
@@ -25,191 +22,161 @@ export const useAuthUserStore = defineStore("authUser", () => {
   const userData: Ref<UserData | null> = ref(null);
   const authPages: Ref<string[]> = ref([]);
   const authBranchIds: Ref<number[]> = ref([]);
+  const loading = ref(false);
   const router = useRouter();
+
+  // Computed properties
+  const isAuthenticated = computed(() => userData.value !== null);
+  const userEmail = computed(() => userData.value?.email || null);
+  const userName = computed(() => userData.value?.user_metadata?.full_name || userData.value?.email || null);
 
   async function registerUser(
     email: string,
     password: string,
     username: string
   ) {
-    const { data: signUpData, error: signUpError } = await supabase.auth.signUp(
-      {
-        email,
-        password,
-      }
-    );
-
-    if (signUpError) {
-      return { error: signUpError };
-    }
-
-    if (!signUpData.user) {
-      return { error: "Signup failed" };
-    }
-
-    const userId = signUpData.user.id;
-
-    const { error: insertError } = await supabase.from("users").insert([
-      {
-        user_id: userId,
-        username,
-      },
-    ]);
-
-    if (insertError) {
-      return { error: insertError };
-    }
-
-    return { data: { id: userId, email } };
-  }
-
-  async function signIn(email: string, password: string, value: boolean) {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      return { error };
-    }
-
-    if (!data.session) {
-      return { error: "No session" };
-    }
-
-    const user = data.user;
-    localStorage.setItem("access_token", data.session.access_token);
-    localStorage.setItem("refresh_token", data.session.refresh_token);
-    localStorage.setItem("auth_id", user.id);
-
-    const { data: profiles, error: profileError } = await supabase
-      .from("users")
-      .select("*")
-      .eq("user_id", user.id)
-      .single();
-
-    if (profileError) {
-      return { error: profileError };
-    }
-
-    localStorage.setItem("user_id", profiles.id);
-
-    userData.value = {
-      id: user.id,
-      email: user.email,
-      username: null,
-      profile_image: null,
-     /*  profile_background: null, */
-    };
-
-    return { user };
-  }
-
-  return {
-    userData,
-    authPages,
-    authBranchIds,
-    registerUser,
-    signIn,
-  };
-});
-
-export async function fetchUserData() {
-  const loading = ref(true);
-  const error = ref<Error | null>(null);
-  const userData = ref<UserData | null>(null);
-  try {
     loading.value = true;
-    error.value = null;
-
-    // Get user from Supabase auth
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError) throw authError;
-    if (!user) throw new Error("No authenticated user");
-
-    // Get additional user data from Supabase database
-    const { data: profile, error: profileError } = await supabase
-      .from("users")
-      .select("username, profile_image")
-      .eq("user_id", user.id)
-      .single();
-
-    if (profileError && profileError.code !== "PGRST116") {
-      // Ignore "no rows returned" error
-      throw profileError;
-    }
-
-    userData.value = {
-      id: user.id,
-      email: user.email || "",
-      username: profile?.username || null,
-      profile_image: profile?.profile_image || null,
-    };
-  } catch (e) {
-   /*  console.error("Error fetching user info:", e); */
-    error.value = e instanceof Error ? e : new Error("Unknown error occurred");
-  } finally {
-    loading.value = false;
-  }
-}
-
-// Initial fetch
-fetchUserData();
-export { supabase };
-
-export function useUserData() {
-  const user = ref<UserData | null>(null);
-  const loading = ref(true);
-  const error = ref<Error | null>(null);
-
-  const fetchUserData = async () => {
     try {
-      loading.value = true;
-      error.value = null;
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp(
+        {
+          email,
+          password,
+          options: {
+            data: {
+              full_name: username,
+            }
+          }
+        }
+      );
 
-      const {
-        data: { user: authUser },
-        error: authError,
-      } = await supabase.auth.getUser();
-
-      if (authError) throw authError;
-      if (!authUser) throw new Error("No authenticated user");
-
-      const { data: profile, error: profileError } = await supabase
-        .from("users")
-        .select("username, profile_image")
-        .eq("user_id", authUser.id)
-        .single();
-
-      if (profileError && profileError.code !== "PGRST116") {
-        throw profileError;
+      if (signUpError) {
+        return { error: signUpError };
       }
 
-      user.value = {
-        id: authUser.id,
-        email: authUser.email || "",
-        username: profile?.username || null,
-        profile_image: profile?.profile_image || null,
-      };
-    } catch (e) {
-      console.error("Error fetching user info:", e);
-      error.value =
-        e instanceof Error ? e : new Error("Unknown error occurred");
+      if (!signUpData.user) {
+        return { error: new Error("Signup failed") };
+      }
+
+      return { data: { id: signUpData.user.id, email } };
     } finally {
       loading.value = false;
     }
-  };
+  }
 
-  onMounted(fetchUserData);
+  async function signIn(email: string, password: string, rememberMe = false) {
+    loading.value = true;
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        return { error };
+      }
+
+      if (!data.session) {
+        return { error: new Error("No session") };
+      }
+
+      const user = data.user;
+      localStorage.setItem("access_token", data.session.access_token);
+      localStorage.setItem("refresh_token", data.session.refresh_token);
+      localStorage.setItem("auth_id", user.id);
+
+      // Update the store's userData with Supabase user data only
+      userData.value = {
+        id: user.id,
+        email: user.email,
+        created_at: user.created_at,
+        user_metadata: user.user_metadata,
+        app_metadata: user.app_metadata,
+      };
+
+      return { user };
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function signOut() {
+    loading.value = true;
+    try {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        return { error };
+      }
+
+      // Clear local storage
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("auth_id");
+
+      // Clear user data
+      userData.value = null;
+
+      // Redirect to home or login page
+      router.push("/");
+
+      return { success: true };
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  // Initialize auth state on store creation
+  async function initializeAuth() {
+    loading.value = true;
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser();
+
+      if (error || !user) {
+        userData.value = null;
+        return;
+      }
+
+      // Set user data from Supabase auth user only
+      userData.value = {
+        id: user.id,
+        email: user.email,
+        created_at: user.created_at,
+        user_metadata: user.user_metadata,
+        app_metadata: user.app_metadata,
+      };
+    } catch (error) {
+      console.error("Error initializing auth:", error);
+      userData.value = null;
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  // Call initialize on store creation
+  initializeAuth();
 
   return {
-    user,
+    // State
+    userData,
+    authPages,
+    authBranchIds,
     loading,
-    error,
-    refresh: fetchUserData,
+
+    // Computed
+    isAuthenticated,
+    userEmail,
+    userName,
+
+    // Actions
+    registerUser,
+    signIn,
+    signOut,
+    initializeAuth,
   };
+});
+
+// Utility function for logout (can be used independently)
+export async function doLogout() {
+  const authStore = useAuthUserStore();
+  return await authStore.signOut();
 }
