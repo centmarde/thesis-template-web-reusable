@@ -22,9 +22,17 @@ export interface CTAButton {
   target: string
 }
 
+export interface LogoConfig {
+  src: string
+  alt: string
+  width?: number
+  height?: number
+}
+
 export interface NavbarConfig {
   title: string
   icon: string
+  logo?: LogoConfig
   color: string
   elevation: number
   density: 'default' | 'prominent' | 'comfortable' | 'compact'

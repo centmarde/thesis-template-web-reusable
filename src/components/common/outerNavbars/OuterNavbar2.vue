@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-  import type { CTAButton, NavigationItem, UIConfig } from '@/controller/landingController'
-  import { computed, ref } from 'vue'
+  import type { CTAButton, NavigationItem, UIConfig, LogoConfig } from '@/controller/landingController'
+  import { computed, ref, onMounted, onUnmounted } from 'vue'
   import { useRouter } from 'vue-router'
   import { useTheme } from '@/composables/useTheme'
+  import { useDisplay } from 'vuetify'
 
   interface Props {
     config?: UIConfig | null
@@ -11,11 +12,45 @@
   const props = defineProps<Props>()
   const router = useRouter()
 
+  // Responsive breakpoints
+  const { mobile } = useDisplay()
+
   // Mobile drawer state
   const drawer = ref(false)
 
   // Theme management
   const { toggleTheme: handleToggleTheme, getCurrentTheme, isLoadingTheme } = useTheme()
+
+  // Scroll detection for mobile drawer auto-close
+  let lastScrollY = ref(0)
+  let ticking = ref(false)
+
+  const handleScroll = () => {
+    if (!ticking.value) {
+      requestAnimationFrame(() => {
+        const currentScrollY = window.scrollY
+
+        // Close mobile drawer when scrolling down
+        if (mobile.value && drawer.value && currentScrollY > lastScrollY.value) {
+          drawer.value = false
+        }
+
+        lastScrollY.value = currentScrollY
+        ticking.value = false
+      })
+      ticking.value = true
+    }
+  }
+
+  // Add scroll listener on mount, remove on unmount
+  onMounted(() => {
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    lastScrollY.value = window.scrollY
+  })
+
+  onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll)
+  })
 
   const navbarConfig = computed(() => props.config?.navbar)
 
@@ -97,17 +132,46 @@
     >
       <!-- Logo and Title Section -->
       <template #prepend>
-        <v-avatar
-          class="me-3"
-          size="40"
-          :color="navbarConfig.color === 'transparent' ? 'primary' : 'primary-darken-1'"
-        >
-          <v-icon
-            :icon="navbarConfig.icon"
-            size="24"
-            color="white"
-          />
-        </v-avatar>
+        <!-- Logo Image with Icon Fallback -->
+        <template v-if="navbarConfig.logo?.src">
+          <v-img
+            :src="navbarConfig.logo.src"
+            :alt="navbarConfig.logo.alt"
+            :width="navbarConfig.logo.width || 40"
+            :height="navbarConfig.logo.height || 40"
+            class="me-3"
+            contain
+          >
+            <template #error>
+              <!-- Fallback to avatar with icon if image fails to load -->
+              <v-avatar
+                class="me-3"
+                size="40"
+                :color="navbarConfig.color === 'transparent' ? 'primary' : 'primary-darken-1'"
+              >
+                <v-icon
+                  :icon="navbarConfig.icon"
+                  size="24"
+                  color="white"
+                />
+              </v-avatar>
+            </template>
+          </v-img>
+        </template>
+        <template v-else>
+          <!-- Default avatar with icon when no logo is configured -->
+          <v-avatar
+            class="me-3"
+            size="40"
+            :color="navbarConfig.color === 'transparent' ? 'primary' : 'primary-darken-1'"
+          >
+            <v-icon
+              :icon="navbarConfig.icon"
+              size="24"
+              color="white"
+            />
+          </v-avatar>
+        </template>
 
         <div class="d-flex flex-column">
           <span class="text-h6 font-weight-bold ">
@@ -207,16 +271,44 @@
       <!-- Drawer Header -->
       <v-list-item class="pa-4 border-b">
         <template #prepend>
-          <v-avatar
-            :color="navbarConfig.color === 'transparent' ? 'light' : 'primary-darken-1'"
-            size="48"
-          >
-            <v-icon
-              :icon="navbarConfig.icon"
-              size="28"
-              color="white"
-            />
-          </v-avatar>
+          <!-- Logo Image with Icon Fallback -->
+          <template v-if="navbarConfig.logo?.src">
+            <v-img
+              :src="navbarConfig.logo.src"
+              :alt="navbarConfig.logo.alt"
+              :width="navbarConfig.logo.width || 48"
+              :height="navbarConfig.logo.height || 48"
+              class="me-3"
+              contain
+            >
+              <template #error>
+                <!-- Fallback to avatar with icon if image fails to load -->
+                <v-avatar
+                  :color="navbarConfig.color === 'transparent' ? 'light' : 'primary-darken-1'"
+                  size="48"
+                >
+                  <v-icon
+                    :icon="navbarConfig.icon"
+                    size="28"
+                    color="white"
+                  />
+                </v-avatar>
+              </template>
+            </v-img>
+          </template>
+          <template v-else>
+            <!-- Default avatar with icon when no logo is configured -->
+            <v-avatar
+              :color="navbarConfig.color === 'transparent' ? 'light' : 'primary-darken-1'"
+              size="48"
+            >
+              <v-icon
+                :icon="navbarConfig.icon"
+                size="28"
+                color="white"
+              />
+            </v-avatar>
+          </template>
         </template>
 
         <v-list-item-title class="text-h6 font-weight-bold text-primary">
@@ -240,36 +332,31 @@
           class="ma-2"
           @click="handleNavigation(item)"
         />
+
+        <!-- Theme Toggle List Item -->
+        <v-list-item
+          :title="themeTooltip"
+          :prepend-icon="themeIcon"
+          rounded="xl"
+          class="ma-2"
+          @click="toggleTheme"
+        />
+
+        <!-- CTA Button List Item -->
+        <v-list-item
+          v-if="navbarConfig.ctaButton"
+          :title="navbarConfig.ctaButton.label"
+          prepend-icon="mdi-rocket-launch"
+          rounded="xl"
+          class="ma-2"
+          @click="handleCTAAction(navbarConfig.ctaButton)"
+        />
       </v-list>
 
       <!-- Mobile Actions -->
       <template #append>
         <div class="pa-4 border-t">
-          <!-- Theme Toggle -->
-          <v-btn
-            :loading="isLoadingTheme"
-            block
-            variant="outlined"
-            :prepend-icon="themeIcon"
-            class="mb-3"
-            @click="toggleTheme"
-          >
-
-            {{ themeTooltip }}
-          </v-btn>
-
-          <!-- CTA Button -->
-          <v-btn
-            v-if="navbarConfig.ctaButton"
-            block
-            :color="navbarConfig.ctaButton.color"
-            :variant="navbarConfig.ctaButton.variant"
-            size="large"
-            prepend-icon="mdi-rocket-launch"
-            @click="handleCTAAction(navbarConfig.ctaButton)"
-          >
-            {{ navbarConfig.ctaButton.label }}
-          </v-btn>
+          <!-- Actions section now empty - all moved to list items -->
         </div>
       </template>
     </v-navigation-drawer>

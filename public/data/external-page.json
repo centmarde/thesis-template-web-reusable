@@ -44,10 +44,16 @@
     "showNavbar": true,
     "showFooter": true,
     "_comment": "Select the navbar component to use: 1, 2, 3, or 4",
-    "navbarComponent": "3",
+    "navbarComponent": "4",
     "navbar": {
       "title": "Thesis Template",
       "icon": "mdi-school",
+      "logo": {
+        "src": "/src/assets/logo.svg",
+        "alt": "Thesis Template Logo",
+        "width": 32,
+        "height": 32
+      },
       "color": "primary",
       "elevation": 2,
       "density": "comfortable",

@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-  import type { CTAButton, NavigationItem, UIConfig } from '@/controller/landingController'
-  import { computed, ref, onMounted, onUnmounted } from 'vue'
+  import type { CTAButton, NavigationItem, UIConfig, LogoConfig } from '@/controller/landingController'
+  import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
   import { useRouter } from 'vue-router'
+  import { useDisplay } from 'vuetify'
   import { useTheme } from '@/composables/useTheme'
 
   interface Props {
@@ -11,9 +12,13 @@
   const props = defineProps<Props>()
   const router = useRouter()
 
+  // Vuetify display composable for responsiveness
+  const { mobile, mdAndUp, lgAndUp, xs, sm, md } = useDisplay()
+
   // Mobile drawer state
   const drawer = ref(false)
   const isScrolled = ref(false)
+  const lastScrollY = ref(0)
 
   // Theme management
   const { toggleTheme: handleToggleTheme, getCurrentTheme, isLoadingTheme } = useTheme()
@@ -29,10 +34,34 @@
     return `Switch to ${currentTheme.value === 'dark' ? 'light' : 'dark'} theme`
   })
 
-  // Scroll handler for floating effect
+  // Scroll handler for floating effect and auto-close drawer
   const handleScroll = () => {
-    isScrolled.value = window.scrollY > 20
+    const currentScrollY = window.scrollY
+    isScrolled.value = currentScrollY > 20
+
+    // Auto-close drawer when scrolling down on mobile and tablets
+    if (!lgAndUp.value && drawer.value) {
+      if (currentScrollY > lastScrollY.value && currentScrollY > 100) {
+        drawer.value = false
+      }
+    }
+
+    lastScrollY.value = currentScrollY
   }
+
+  // Watch for drawer state changes and close on route change
+  watch(() => router.currentRoute.value, () => {
+    if (drawer.value) {
+      drawer.value = false
+    }
+  })
+
+  // Close drawer when switching from mobile to desktop
+  watch(lgAndUp, (newLgAndUp, oldLgAndUp) => {
+    if (!oldLgAndUp && newLgAndUp && drawer.value) {
+      drawer.value = false
+    }
+  })
 
   onMounted(() => {
     window.addEventListener('scroll', handleScroll)
@@ -99,37 +128,63 @@
 
 <template>
   <div v-if="config?.showNavbar && navbarConfig">
-    <!-- Floating Navbar Card Design -->
-    <v-card
-      :class="[
-        'floating-navbar mx-auto',
-        { 'scrolled': isScrolled }
-      ]"
+    <!-- Floating Navbar using v-app-bar with Vuetify positioning -->
+    <v-app-bar
       :elevation="isScrolled ? 12 : 8"
+      :height="xs ? 56 : 64"
       rounded="pill"
-      variant="elevated"
+      position="fixed"
+      class="mx-auto px-2"
+      :style="{
+        top: isScrolled ? (xs ? '4px' : '10px') : (xs ? '8px' : '20px'),
+        left: '50%',
+        transform: `translateX(-50%) ${isScrolled ? 'scale(0.98)' : 'scale(1)'}`,
+        width: isScrolled ? (xs ? '96%' : '90%') : (xs ? '98%' : '95%'),
+        maxWidth: '1200px',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+      }"
+
     >
-      <v-toolbar
-        :height="60"
-        color="transparent"
-        flat
-        class="px-2"
-      >
-        <!-- Logo Section with Animated Badge -->
-        <template #prepend>
-          <div class="d-flex align-center">
-            <v-badge
-              :content="'V3'"
-              color="success"
-              dot
-              offset-x="8"
-              offset-y="8"
-              class="me-2"
-            >
+      <!-- Logo Section with Badge -->
+      <template #prepend>
+        <div class="d-flex align-center">
+          <v-badge
+            content="V3"
+            color="success"
+            dot
+            offset-x="8"
+            offset-y="8"
+            class="me-2"
+          >
+            <!-- Logo Image with Icon Fallback -->
+            <template v-if="navbarConfig.logo?.src">
+              <v-img
+                :src="navbarConfig.logo.src"
+                :alt="navbarConfig.logo.alt"
+                :width="navbarConfig.logo.width || 42"
+                :height="navbarConfig.logo.height || 42"
+                contain
+              >
+                <template #error>
+                  <!-- Fallback to avatar with icon if image fails to load -->
+                  <v-avatar
+                    :color="navbarConfig.color"
+                    size="42"
+                  >
+                    <v-icon
+                      :icon="navbarConfig.icon"
+                      size="22"
+                      color="white"
+                    />
+                  </v-avatar>
+                </template>
+              </v-img>
+            </template>
+            <template v-else>
+              <!-- Default avatar with icon when no logo is configured -->
               <v-avatar
                 :color="navbarConfig.color"
                 size="42"
-                class="logo-avatar"
               >
                 <v-icon
                   :icon="navbarConfig.icon"
@@ -137,10 +192,182 @@
                   color="white"
                 />
               </v-avatar>
+            </template>
+          </v-badge>
+
+          <!-- Hide title on mobile to minimize navbar -->
+          <div class="d-flex flex-column ms-2 d-none d-md-flex">
+            <span class="text-subtitle-1 font-weight-bold text-primary">
+              {{ navbarConfig.title }}
+            </span>
+            <span class="text-caption text-medium-emphasis">
+              Academic Excellence
+            </span>
+          </div>
+        </div>
+      </template>
+
+      <v-spacer />
+
+      <!-- Desktop Navigation - Hidden on mobile and small tablets -->
+      <template #append>
+        <div class="d-flex align-center" v-if="lgAndUp">
+          <!-- Navigation Buttons -->
+          <div class="d-flex align-center me-4">
+            <v-btn
+              v-for="(item, index) in navbarConfig.navigationItems"
+              :key="item.label"
+              :class="[
+                'mx-1',
+                { 'd-none d-xl-flex': index > 1 }
+              ]"
+              variant="text"
+              rounded="pill"
+              size="large"
+              @click="handleNavigation(item)"
+            >
+              <v-icon
+                start
+                size="small"
+                :icon="`mdi-${index === 0 ? 'star' : 'information'}`"
+              />
+              <span :class="{ 'd-none d-lg-inline': index > 0 }">
+                {{ item.label }}
+              </span>
+            </v-btn>
+          </div>
+
+          <!-- Theme Toggle Menu -->
+          <v-menu location="bottom">
+            <template #activator="{ props: menuProps }">
+              <v-btn
+                v-bind="menuProps"
+                :loading="isLoadingTheme"
+                variant="outlined"
+                rounded="pill"
+                size="large"
+                class="me-3"
+                :prepend-icon="themeIcon"
+              >
+                <span>Theme</span>
+              </v-btn>
+            </template>
+
+            <v-card width="200" class="mt-2">
+              <v-list density="compact">
+                <v-list-item
+                  prepend-icon="mdi-white-balance-sunny"
+                  title="Light Mode"
+                  :active="currentTheme === 'light'"
+                  @click="currentTheme === 'dark' && toggleTheme()"
+                />
+                <v-list-item
+                  prepend-icon="mdi-weather-night"
+                  title="Dark Mode"
+                  :active="currentTheme === 'dark'"
+                  @click="currentTheme === 'light' && toggleTheme()"
+                />
+              </v-list>
+            </v-card>
+          </v-menu>
+
+          <!-- CTA Button -->
+          <v-btn
+            v-if="navbarConfig.ctaButton"
+            :color="navbarConfig.ctaButton.color"
+            variant="elevated"
+            size="large"
+            rounded="pill"
+            class="px-6"
+            prepend-icon="mdi-rocket-launch-outline"
+            @click="handleCTAAction(navbarConfig.ctaButton)"
+          >
+            {{ navbarConfig.ctaButton.label }}
+            <v-icon
+              end
+              icon="mdi-arrow-right"
+              class="ms-1"
+            />
+          </v-btn>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <v-btn
+          v-if="!lgAndUp"
+          icon="mdi-menu"
+          variant="text"
+          :size="xs ? 'default' : 'large'"
+          @click="drawer = !drawer"
+        />
+      </template>
+    </v-app-bar>
+
+    <!-- Mobile Navigation Drawer -->
+    <v-navigation-drawer
+      v-model="drawer"
+      :temporary="!lgAndUp"
+      :permanent="false"
+      location="start"
+      :width="280"
+      :scrim="true"
+      :elevation="24"
+      absolute
+      class="pa-0"
+      style="position: fixed !important; z-index: 9999 !important; top: 0 !important; left: 0 !important; height: 100vh !important;"
+    >
+      <!-- Drawer Header with Logo and Title -->
+      <template #prepend>
+        <v-card flat class="px-4 py-6">
+          <div class="d-flex align-center">
+            <v-badge
+              content="V3"
+              color="success"
+              dot
+              offset-x="8"
+              offset-y="8"
+              class="me-3"
+            >
+              <!-- Logo Image with Icon Fallback -->
+              <template v-if="navbarConfig.logo?.src">
+                <v-img
+                  :src="navbarConfig.logo.src"
+                  :alt="navbarConfig.logo.alt"
+                  :width="navbarConfig.logo.width || 48"
+                  :height="navbarConfig.logo.height || 48"
+                  contain
+                >
+                  <template #error>
+                    <!-- Fallback to avatar with icon if image fails to load -->
+                    <v-avatar
+                      :color="navbarConfig.color"
+                      size="48"
+                    >
+                      <v-icon
+                        :icon="navbarConfig.icon"
+                        size="24"
+                        color="white"
+                      />
+                    </v-avatar>
+                  </template>
+                </v-img>
+              </template>
+              <template v-else>
+                <!-- Default avatar with icon when no logo is configured -->
+                <v-avatar
+                  :color="navbarConfig.color"
+                  size="48"
+                >
+                  <v-icon
+                    :icon="navbarConfig.icon"
+                    size="24"
+                    color="white"
+                  />
+                </v-avatar>
+              </template>
             </v-badge>
 
-            <div class="d-flex flex-column ms-2 d-none d-sm-flex">
-              <span class="text-subtitle-1 font-weight-bold text-primary">
+            <div class="d-flex flex-column">
+              <span class="text-h6 font-weight-bold text-primary">
                 {{ navbarConfig.title }}
               </span>
               <span class="text-caption text-medium-emphasis">
@@ -148,348 +375,94 @@
               </span>
             </div>
           </div>
-        </template>
 
-        <v-spacer />
-
-        <!-- Desktop Navigation with Hover Effects -->
-        <template #append>
-          <div class="d-none d-lg-flex align-center">
-            <!-- Navigation Buttons with Pills -->
-            <div class="d-flex align-center me-4">
-              <v-btn
-                v-for="(item, index) in navbarConfig.navigationItems"
-                :key="item.label"
-                :class="[
-                  'nav-pill mx-1',
-                  `nav-delay-${index + 1}`
-                ]"
-                variant="text"
-                rounded="pill"
-                size="large"
-                @click="handleNavigation(item)"
-              >
-                <v-icon
-                  start
-                  size="small"
-                  :icon="`mdi-${index === 0 ? 'star' : 'information'}`"
-                />
-                {{ item.label }}
-              </v-btn>
-            </div>
-
-            <!-- Theme Toggle with Advanced Design -->
-            <v-menu location="bottom">
-              <template #activator="{ props: menuProps }">
-                <v-btn
-                  v-bind="menuProps"
-                  :loading="isLoadingTheme"
-                  variant="outlined"
-                  rounded="pill"
-                  size="large"
-                  class="me-3 theme-toggle"
-                  :prepend-icon="themeIcon"
-                >
-                  <span class="d-none d-xl-inline">Theme</span>
-                </v-btn>
-              </template>
-
-              <v-card width="200" class="mt-2">
-                <v-list>
-                  <v-list-item
-                    prepend-icon="mdi-white-balance-sunny"
-                    title="Light Mode"
-                    :active="currentTheme === 'light'"
-                    @click="currentTheme === 'dark' && toggleTheme()"
-                  />
-                  <v-list-item
-                    prepend-icon="mdi-weather-night"
-                    title="Dark Mode"
-                    :active="currentTheme === 'dark'"
-                    @click="currentTheme === 'light' && toggleTheme()"
-                  />
-                </v-list>
-              </v-card>
-            </v-menu>
-
-            <!-- Enhanced CTA Button -->
-            <v-btn
-              v-if="navbarConfig.ctaButton"
-              :color="navbarConfig.ctaButton.color"
-              variant="elevated"
-              size="large"
-              rounded="pill"
-              class="cta-button px-6"
-              prepend-icon="mdi-rocket-launch-outline"
-              @click="handleCTAAction(navbarConfig.ctaButton)"
-            >
-              {{ navbarConfig.ctaButton.label }}
-              <v-icon
-                end
-                icon="mdi-arrow-right"
-                class="ms-1"
-              />
-            </v-btn>
-          </div>
-
-          <!-- Mobile Menu Button -->
+          <!-- Close Button -->
           <v-btn
-            class="d-lg-none"
-            icon="mdi-menu"
+            icon="mdi-close"
             variant="text"
-            size="large"
-            @click="drawer = !drawer"
+            size="small"
+            class="position-absolute"
+            style="top: 16px; right: 16px;"
+            @click="drawer = false"
           />
-        </template>
-      </v-toolbar>
-    </v-card>
+        </v-card>
+        <v-divider />
+      </template>
 
-    <!-- Mobile Side Drawer with Modern Design -->
-    <v-navigation-drawer
-      v-model="drawer"
-      location="end"
-      temporary
-      width="320"
-      class="d-lg-none mobile-drawer"
-    >
-      <!-- Enhanced Drawer Header -->
-      <v-card
-        class="ma-4 pa-4"
-        variant="tonal"
-        rounded="xl"
-      >
-        <div class="d-flex align-center">
-          <v-avatar
-            :color="navbarConfig.color"
-            size="56"
-            class="me-4"
-          >
-            <v-icon
-              :icon="navbarConfig.icon"
-              size="32"
-              color="white"
-            />
-          </v-avatar>
-
-          <div>
-            <h3 class="text-h6 font-weight-bold text-primary">
-              {{ navbarConfig.title }}
-            </h3>
-            <p class="text-caption text-medium-emphasis mb-0">
-              Modern Academic Platform
-            </p>
-          </div>
-        </div>
-      </v-card>
-
-      <!-- Navigation with Enhanced Styling -->
-      <v-list class="px-4">
+      <!-- Navigation List -->
+      <v-list nav class="py-0">
+        <!-- Navigation Items -->
         <v-list-item
           v-for="(item, index) in navbarConfig.navigationItems"
           :key="item.label"
+          :prepend-icon="`mdi-${index === 0 ? 'star' : 'information'}`"
           :title="item.label"
-          :prepend-icon="`mdi-${index === 0 ? 'star-outline' : 'information-outline'}`"
           rounded="xl"
-          class="mb-2 nav-item"
-          variant="text"
+          class="ma-2"
           @click="handleNavigation(item)"
-        >
-          <template #append>
-            <v-icon
-              icon="mdi-chevron-right"
-              size="small"
-              class="text-medium-emphasis"
+        />
+
+        <v-divider class="my-2" />
+
+        <!-- Theme Toggle -->
+        <v-list-group value="Theme">
+          <template #activator="{ props: activatorProps }">
+            <v-list-item
+              v-bind="activatorProps"
+              :prepend-icon="themeIcon"
+              title="Theme"
+              :subtitle="`Current: ${currentTheme === 'dark' ? 'Dark' : 'Light'} Mode`"
+              rounded="xl"
+              class="ma-2"
             />
           </template>
-        </v-list-item>
+
+          <v-list-item
+            prepend-icon="mdi-white-balance-sunny"
+            title="Light Mode"
+            :active="currentTheme === 'light'"
+            rounded="xl"
+            class="ma-2 ms-4"
+            @click="currentTheme === 'dark' && toggleTheme()"
+          />
+          <v-list-item
+            prepend-icon="mdi-weather-night"
+            title="Dark Mode"
+            :active="currentTheme === 'dark'"
+            rounded="xl"
+            class="ma-2 ms-4"
+            @click="currentTheme === 'light' && toggleTheme()"
+          />
+        </v-list-group>
       </v-list>
 
-      <!-- Mobile Actions Footer -->
+      <!-- CTA Button at Bottom -->
       <template #append>
-        <v-card
-          class="ma-4 pa-4"
-          variant="outlined"
-          rounded="xl"
-        >
-          <!-- Theme Selection -->
-          <v-btn-toggle
-            v-model="currentTheme"
-            mandatory
-            variant="outlined"
-            divided
-            rounded="pill"
-            class="mb-4 w-100"
-          >
-            <v-btn
-              value="light"
-              prepend-icon="mdi-white-balance-sunny"
-              @click="currentTheme === 'dark' && toggleTheme()"
-            >
-              Light
-            </v-btn>
-            <v-btn
-              value="dark"
-              prepend-icon="mdi-weather-night"
-              @click="currentTheme === 'light' && toggleTheme()"
-            >
-              Dark
-            </v-btn>
-          </v-btn-toggle>
-
-          <!-- Mobile CTA -->
+        <v-card flat class="pa-4">
           <v-btn
             v-if="navbarConfig.ctaButton"
-            block
             :color="navbarConfig.ctaButton.color"
             variant="elevated"
             size="large"
             rounded="pill"
+            block
             prepend-icon="mdi-rocket-launch-outline"
             @click="handleCTAAction(navbarConfig.ctaButton)"
           >
             {{ navbarConfig.ctaButton.label }}
+            <v-icon
+              end
+              icon="mdi-arrow-right"
+              class="ms-1"
+            />
           </v-btn>
         </v-card>
       </template>
     </v-navigation-drawer>
+
   </div>
 </template>
 
 <style scoped>
-/* Floating Navbar Styles */
-.floating-navbar {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-  width: 95%;
-  max-width: 1200px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(20px);
-  background: rgba(var(--v-theme-surface), 0.95) !important;
-  border: 1px solid rgba(var(--v-theme-primary), 0.1);
-}
-
-.floating-navbar.scrolled {
-  top: 10px;
-  width: 90%;
-  backdrop-filter: blur(25px);
-  background: rgba(var(--v-theme-surface), 0.98) !important;
-}
-
-/* Logo Animation */
-.logo-avatar {
-  transition: all 0.3s ease;
-}
-
-.logo-avatar:hover {
-  transform: scale(1.1);
-}
-
-/* Navigation Pills */
-.nav-pill {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.nav-pill:hover {
-  background: rgba(var(--v-theme-primary), 0.08) !important;
-  transform: translateY(-2px);
-}
-
-.nav-pill::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(var(--v-theme-primary), 0.1),
-    transparent
-  );
-  transition: left 0.5s;
-}
-
-.nav-pill:hover::before {
-  left: 100%;
-}
-
-/* Staggered Animation */
-.nav-delay-1 { animation-delay: 0.1s; }
-.nav-delay-2 { animation-delay: 0.2s; }
-.nav-delay-3 { animation-delay: 0.3s; }
-
-/* Theme Toggle Enhancements */
-.theme-toggle {
-  border: 2px solid rgba(var(--v-theme-primary), 0.2);
-  transition: all 0.3s ease;
-}
-
-.theme-toggle:hover {
-  border-color: rgba(var(--v-theme-primary), 0.6);
-  background: rgba(var(--v-theme-primary), 0.05) !important;
-}
-
-/* CTA Button Enhancements */
-.cta-button {
-  background: linear-gradient(
-    135deg,
-    rgb(var(--v-theme-primary)) 0%,
-    rgba(var(--v-theme-primary), 0.8) 100%
-  ) !important;
-  box-shadow: 0 8px 32px rgba(var(--v-theme-primary), 0.3);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.cta-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(var(--v-theme-primary), 0.4);
-}
-
-/* Mobile Drawer Enhancements */
-.mobile-drawer {
-  backdrop-filter: blur(20px);
-}
-
-.nav-item {
-  transition: all 0.2s ease;
-}
-
-.nav-item:hover {
-  background: rgba(var(--v-theme-primary), 0.08) !important;
-  transform: translateX(8px);
-}
-
-/* Responsive adjustments */
-@media (max-width: 1024px) {
-  .floating-navbar {
-    width: 98%;
-  }
-}
-
-@media (max-width: 768px) {
-  .floating-navbar {
-    top: 10px;
-    width: 95%;
-  }
-
-  .floating-navbar.scrolled {
-    top: 5px;
-  }
-}
-
-/* Dark mode adjustments */
-.v-theme--dark .floating-navbar {
-  background: rgba(var(--v-theme-surface), 0.9) !important;
-  border-color: rgba(var(--v-theme-primary), 0.2);
-}
-
-.v-theme--dark .floating-navbar.scrolled {
-  background: rgba(var(--v-theme-surface), 0.95) !important;
-}
+/* All styling handled by Vuetify components and utilities only */
 </style>

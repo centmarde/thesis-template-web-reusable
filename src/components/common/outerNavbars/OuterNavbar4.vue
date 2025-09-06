@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-  import type { CTAButton, NavigationItem, UIConfig } from '@/controller/landingController'
-  import { computed, ref } from 'vue'
+  import type { CTAButton, NavigationItem, UIConfig, LogoConfig } from '@/controller/landingController'
+  import { computed, ref, onMounted, onUnmounted } from 'vue'
   import { useRouter } from 'vue-router'
   import { useTheme } from '@/composables/useTheme'
+  import { useDisplay } from 'vuetify'
 
   interface Props {
     config?: UIConfig | null
@@ -11,11 +12,45 @@
   const props = defineProps<Props>()
   const router = useRouter()
 
+  // Responsive breakpoints
+  const { mobile } = useDisplay()
+
   // Mobile drawer state
   const mobileDrawer = ref(false)
 
   // Theme management
   const { toggleTheme: handleToggleTheme, getCurrentTheme, isLoadingTheme } = useTheme()
+
+  // Scroll detection for mobile drawer auto-close
+  let lastScrollY = ref(0)
+  let ticking = ref(false)
+
+  const handleScroll = () => {
+    if (!ticking.value) {
+      requestAnimationFrame(() => {
+        const currentScrollY = window.scrollY
+
+        // Close mobile drawer when scrolling down
+        if (mobile.value && mobileDrawer.value && currentScrollY > lastScrollY.value) {
+          mobileDrawer.value = false
+        }
+
+        lastScrollY.value = currentScrollY
+        ticking.value = false
+      })
+      ticking.value = true
+    }
+  }
+
+  // Add scroll listener on mount, remove on unmount
+  onMounted(() => {
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    lastScrollY.value = window.scrollY
+  })
+
+  onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll)
+  })
 
   const navbarConfig = computed(() => props.config?.navbar)
 
@@ -33,8 +68,10 @@
   }
 
   function handleNavigation (item: NavigationItem) {
-    // Close mobile drawer after navigation
-    mobileDrawer.value = false
+    // Close mobile drawer after navigation on mobile
+    if (mobile.value) {
+      mobileDrawer.value = false
+    }
 
     switch (item.action) {
       case 'scroll': {
@@ -53,8 +90,10 @@
   }
 
   function handleCTAAction (button: CTAButton) {
-    // Close mobile drawer after CTA action
-    mobileDrawer.value = false
+    // Close mobile drawer after CTA action on mobile
+    if (mobile.value) {
+      mobileDrawer.value = false
+    }
 
     switch (button.action) {
       case 'scroll': {
@@ -93,22 +132,54 @@
       height="72"
       color="surface"
       border="b-sm"
+      flat
+      scroll-behavior="elevate"
+      scroll-threshold="50"
       class="top-navbar"
     >
       <!-- Brand/Logo Section -->
       <template #prepend>
         <div class="d-flex align-center">
-          <v-avatar
-            :color="navbarConfig.color"
-            size="44"
-            class="me-3 brand-avatar"
-          >
-            <v-icon
-              :icon="navbarConfig.icon"
-              size="26"
-              color="white"
-            />
-          </v-avatar>
+          <!-- Logo Image with Icon Fallback -->
+          <template v-if="navbarConfig.logo?.src">
+            <v-img
+              :src="navbarConfig.logo.src"
+              :alt="navbarConfig.logo.alt"
+              :width="mobile ? (navbarConfig.logo.width || 36) : (navbarConfig.logo.width || 44)"
+              :height="mobile ? (navbarConfig.logo.height || 36) : (navbarConfig.logo.height || 44)"
+              class="me-3 brand-avatar"
+              contain
+            >
+              <template #error>
+                <!-- Fallback to avatar with icon if image fails to load -->
+                <v-avatar
+                  :color="navbarConfig.color"
+                  :size="mobile ? 36 : 44"
+                  class="me-3 brand-avatar"
+                >
+                  <v-icon
+                    :icon="navbarConfig.icon"
+                    :size="mobile ? 20 : 26"
+                    color="white"
+                  />
+                </v-avatar>
+              </template>
+            </v-img>
+          </template>
+          <template v-else>
+            <!-- Default avatar with icon when no logo is configured -->
+            <v-avatar
+              :color="navbarConfig.color"
+              :size="mobile ? 36 : 44"
+              class="me-3 brand-avatar"
+            >
+              <v-icon
+                :icon="navbarConfig.icon"
+                :size="mobile ? 20 : 26"
+                color="white"
+              />
+            </v-avatar>
+          </template>
 
           <div class="d-none d-sm-block">
             <h2 class="text-h6 font-weight-bold text-primary mb-0">
@@ -187,7 +258,7 @@
       v-model="mobileDrawer"
       location="end"
       temporary
-      width="320"
+      :width="mobile ? 300 : 320"
       class="d-md-none mobile-drawer"
       :elevation="8"
     >
@@ -199,24 +270,54 @@
         :color="navbarConfig.color"
       >
         <div class="d-flex align-center">
-          <v-avatar
-            :color="navbarConfig.color"
-            size="56"
-            class="me-4"
-            variant="elevated"
-          >
-            <v-icon
-              :icon="navbarConfig.icon"
-              size="32"
-              color="white"
-            />
-          </v-avatar>
+          <!-- Logo Image with Icon Fallback -->
+          <template v-if="navbarConfig.logo?.src">
+            <v-img
+              :src="navbarConfig.logo.src"
+              :alt="navbarConfig.logo.alt"
+              :width="mobile ? (navbarConfig.logo.width || 48) : (navbarConfig.logo.width || 56)"
+              :height="mobile ? (navbarConfig.logo.height || 48) : (navbarConfig.logo.height || 56)"
+              class="me-4"
+              contain
+            >
+              <template #error>
+                <!-- Fallback to avatar with icon if image fails to load -->
+                <v-avatar
+                  :color="navbarConfig.color"
+                  :size="mobile ? 48 : 56"
+                  class="me-4"
+                  variant="elevated"
+                >
+                  <v-icon
+                    :icon="navbarConfig.icon"
+                    :size="mobile ? 28 : 32"
+                    color="white"
+                  />
+                </v-avatar>
+              </template>
+            </v-img>
+          </template>
+          <template v-else>
+            <!-- Default avatar with icon when no logo is configured -->
+            <v-avatar
+              :color="navbarConfig.color"
+              :size="mobile ? 48 : 56"
+              class="me-4"
+              variant="elevated"
+            >
+              <v-icon
+                :icon="navbarConfig.icon"
+                :size="mobile ? 28 : 32"
+                color="white"
+              />
+            </v-avatar>
+          </template>
 
           <div>
-            <h3 class="text-h6 font-weight-bold text-white">
+            <h3 class="text-h6 font-weight-bold">
               {{ navbarConfig.title }}
             </h3>
-            <p class="text-caption text-white opacity-80 mb-0">
+            <p class="text-caption opacity-80 mb-0">
               Academic Platform
             </p>
           </div>
@@ -296,16 +397,13 @@
   box-shadow: 0 4px 12px rgba(var(--v-theme-primary), 0.1);
 }
 
-/* Brand Avatar */
-.brand-avatar {
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(var(--v-theme-primary), 0.2);
+/* Enhanced scroll elevation behavior */
+.v-app-bar--scroll-elevated {
+  box-shadow: 0 4px 12px rgba(var(--v-theme-primary), 0.15) !important;
+  background: rgba(var(--v-theme-surface), 1) !important;
 }
 
-.brand-avatar:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(var(--v-theme-primary), 0.3);
-}
+
 
 /* Desktop Navigation Items */
 .nav-item {
@@ -336,6 +434,18 @@
 /* Mobile Navigation Drawer */
 .mobile-drawer {
   backdrop-filter: blur(12px);
+}
+
+/* Enhanced mobile drawer with auto-close behavior */
+.mobile-drawer .v-navigation-drawer__content {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Responsive drawer styling */
+@media (max-width: 599px) {
+  .mobile-drawer {
+    width: 280px !important;
+  }
 }
 
 .mobile-nav-item {
