@@ -43,6 +43,8 @@
   "ui": {
     "showNavbar": true,
     "showFooter": true,
+    "_comment": "Select the navbar component to use: 1, 2, 3, or 4",
+    "navbarComponent": "3",
     "navbar": {
       "title": "Thesis Template",
       "icon": "mdi-school",
