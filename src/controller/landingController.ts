@@ -22,9 +22,17 @@ export interface CTAButton {
   target: string
 }
 
+export interface LogoConfig {
+  src: string
+  alt: string
+  width?: number
+  height?: number
+}
+
 export interface NavbarConfig {
   title: string
   icon: string
+  logo?: LogoConfig
   color: string
   elevation: number
   density: 'default' | 'prominent' | 'comfortable' | 'compact'
@@ -45,6 +53,29 @@ export interface Technology {
   color: string
 }
 
+export interface TeamMemberSocialLink {
+  platform: string
+  icon: string
+  url: string
+}
+
+export interface TeamMember {
+  name: string
+  role: string
+  avatar: string
+  bio: string
+  expertise: string[]
+  email: string
+  socialLinks: TeamMemberSocialLink[]
+}
+
+export interface ThesisTeamConfig {
+  enabled: boolean
+  title: string
+  subtitle: string
+  members: TeamMember[]
+}
+
 export interface FooterConfig {
   companyName: string
   tagline: string
@@ -53,12 +84,14 @@ export interface FooterConfig {
   copyright: string
   socialLinks: SocialLink[]
   technologies: Technology[]
+  thesisTeam: ThesisTeamConfig
 }
 
 export interface UIConfig {
   showNavbar: boolean
   showFooter: boolean
   navbarComponent: '1' | '2' | '3' | '4'
+  footerComponent: '1' | '2'
   navbar: NavbarConfig
   footer: FooterConfig
 }

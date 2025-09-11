@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-  import type { CTAButton, NavigationItem, UIConfig, LogoConfig } from '@/controller/landingController'
+  import type { UIConfig, LogoConfig } from '@/controller/landingController'
   import { computed, ref, onMounted, onUnmounted } from 'vue'
   import { useRouter } from 'vue-router'
   import { useTheme } from '@/composables/useTheme'
   import { useDisplay } from 'vuetify'
+  import { useAuthUserStore } from '@/stores/authUser'
 
   interface Props {
     config?: UIConfig | null
@@ -11,6 +12,7 @@
 
   const props = defineProps<Props>()
   const router = useRouter()
+  const authStore = useAuthUserStore()
 
   // Responsive breakpoints
   const { mobile } = useDisplay()
@@ -67,57 +69,11 @@
     handleToggleTheme()
   }
 
-  function handleNavigation (item: NavigationItem) {
-    // Close mobile drawer after navigation on mobile
-    if (mobile.value) {
-      mobileDrawer.value = false
-    }
-
-    switch (item.action) {
-      case 'scroll': {
-        scrollToSection(item.target)
-        break
-      }
-      case 'navigate': {
-        router.push(item.target)
-        break
-      }
-      case 'external': {
-        window.open(item.target, '_blank', 'noopener,noreferrer')
-        break
-      }
-    }
-  }
-
-  function handleCTAAction (button: CTAButton) {
-    // Close mobile drawer after CTA action on mobile
-    if (mobile.value) {
-      mobileDrawer.value = false
-    }
-
-    switch (button.action) {
-      case 'scroll': {
-        scrollToSection(button.target)
-        break
-      }
-      case 'navigate': {
-        router.push(button.target)
-        break
-      }
-      case 'external': {
-        window.open(button.target, '_blank', 'noopener,noreferrer')
-        break
-      }
-    }
-  }
-
-  function scrollToSection (sectionId: string) {
-    const element = document.querySelector(`#${sectionId}`)
-    if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      })
+  async function handleLogout () {
+    try {
+      await authStore.signOut()
+    } catch (error) {
+      console.error('Logout failed:', error)
     }
   }
 </script>
@@ -192,22 +148,6 @@
         </div>
       </template>
 
-      <!-- Desktop Navigation Menu -->
-      <div class="d-none d-md-flex align-center mx-4">
-        <v-btn
-          v-for="(item, index) in navbarConfig.navigationItems"
-          :key="item.label"
-          variant="text"
-          :color="index === 0 ? 'primary' : 'default'"
-          :prepend-icon="`mdi-${index === 0 ? 'star-outline' : 'information-outline'}`"
-          class="mx-2 nav-item"
-          rounded="lg"
-          @click="handleNavigation(item)"
-        >
-          {{ item.label }}
-        </v-btn>
-      </div>
-
       <v-spacer />
 
       <!-- Desktop Action Buttons -->
@@ -228,18 +168,18 @@
             </v-tooltip>
           </v-btn>
 
-          <!-- CTA Button -->
+          <!-- Logout Button -->
           <v-btn
-            v-if="navbarConfig.ctaButton"
-            :color="navbarConfig.ctaButton.color"
-            :variant="navbarConfig.ctaButton.variant"
+            icon="mdi-logout"
+            variant="text"
             size="large"
-            prepend-icon="mdi-rocket-launch-outline"
-            rounded="lg"
-            class="me-2 cta-button"
-            @click="handleCTAAction(navbarConfig.ctaButton)"
+            color="error"
+            :loading="authStore.loading"
+            @click="handleLogout"
           >
-            {{ navbarConfig.ctaButton.label }}
+            <v-tooltip activator="parent" location="bottom">
+              Logout
+            </v-tooltip>
           </v-btn>
         </div>
 
@@ -325,34 +265,6 @@
         </div>
       </v-card>
 
-      <!-- Mobile Navigation Items -->
-      <v-list
-        nav
-        density="comfortable"
-        class="px-4"
-      >
-        <v-list-item
-          v-for="(item, index) in navbarConfig.navigationItems"
-          :key="item.label"
-          :title="item.label"
-          :prepend-icon="`mdi-${index === 0 ? 'star-outline' : 'information-outline'}`"
-          rounded="xl"
-          class="mb-2 mobile-nav-item"
-          @click="handleNavigation(item)"
-        />
-
-        <!-- Mobile CTA Button as List Item -->
-        <v-list-item
-          v-if="navbarConfig.ctaButton"
-          :title="navbarConfig.ctaButton.label"
-          prepend-icon="mdi-rocket-launch-outline"
-          rounded="xl"
-          class="mb-2 mobile-nav-item mobile-cta-item"
-          :class="`text-${navbarConfig.ctaButton.color}`"
-          @click="handleCTAAction(navbarConfig.ctaButton)"
-        />
-      </v-list>
-
       <v-divider class="my-4 mx-4" />
 
       <!-- Mobile Actions -->
@@ -367,12 +279,28 @@
             block
             variant="outlined"
             :prepend-icon="themeIcon"
-            size="large"
+            size="small"
             rounded="lg"
             :loading="isLoadingTheme"
             @click="toggleTheme"
+            class="text-caption mb-3"
           >
-            {{ themeTooltip }}
+            {{ currentTheme === 'dark' ? 'Light' : 'Dark' }}
+          </v-btn>
+
+          <!-- Logout Button -->
+          <v-btn
+            block
+            variant="outlined"
+            prepend-icon="mdi-logout"
+            size="small"
+            rounded="lg"
+            color="error"
+            :loading="authStore.loading"
+            @click="handleLogout"
+            class="text-caption"
+          >
+            Logout
           </v-btn>
         </v-card>
       </template>
@@ -400,34 +328,6 @@
   background: rgba(var(--v-theme-surface), 1) !important;
 }
 
-
-
-/* Desktop Navigation Items */
-.nav-item {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  text-transform: none;
-  letter-spacing: 0.025em;
-}
-
-.nav-item:hover {
-  background: rgba(var(--v-theme-primary), 0.08) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(var(--v-theme-primary), 0.15);
-}
-
-/* CTA Button */
-.cta-button {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  text-transform: none;
-  font-weight: 600;
-  letter-spacing: 0.025em;
-}
-
-.cta-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(var(--v-theme-primary), 0.25);
-}
-
 /* Mobile Navigation Drawer */
 .mobile-drawer {
   backdrop-filter: blur(12px);
@@ -445,34 +345,6 @@
   }
 }
 
-.mobile-nav-item {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  margin-bottom: 8px;
-}
-
-.mobile-nav-item:hover {
-  background: rgba(var(--v-theme-primary), 0.08) !important;
-  transform: translateX(8px);
-}
-
-.mobile-nav-item.v-list-item--active {
-  background: rgba(var(--v-theme-primary), 0.12) !important;
-  color: rgb(var(--v-theme-primary));
-}
-
-/* Mobile CTA Item Styling */
-.mobile-cta-item {
-  background: rgba(var(--v-theme-primary), 0.1) !important;
-  border: 1px solid rgba(var(--v-theme-primary), 0.2);
-  font-weight: 600;
-}
-
-.mobile-cta-item:hover {
-  background: rgba(var(--v-theme-primary), 0.15) !important;
-  transform: translateX(12px);
-  box-shadow: 0 4px 8px rgba(var(--v-theme-primary), 0.2);
-}
-
 /* Animations */
 @keyframes fadeInUp {
   from {
@@ -483,10 +355,6 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.nav-item {
-  animation: fadeInUp 0.3s ease;
 }
 
 /* Responsive Adjustments */
@@ -515,8 +383,7 @@
 }
 
 /* Focus and Accessibility */
-.nav-item:focus,
-.cta-button:focus {
+.v-btn:focus {
   outline: 2px solid rgba(var(--v-theme-primary), 0.5);
   outline-offset: 2px;
 }
@@ -533,23 +400,6 @@
     rgba(var(--v-theme-surface), 1) 0%,
     rgba(var(--v-theme-surface-bright), 0.98) 100%
   );
-}
-
-/* Navigation Item Indicators */
-.nav-item::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 50%;
-  width: 0;
-  height: 2px;
-  background: rgb(var(--v-theme-primary));
-  transition: all 0.3s ease;
-  transform: translateX(-50%);
-}
-
-.nav-item:hover::after {
-  width: 80%;
 }
 
 /* Elevated styling for mobile header */

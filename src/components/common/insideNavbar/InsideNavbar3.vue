@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-  import type { CTAButton, NavigationItem, UIConfig, LogoConfig } from '@/controller/landingController'
+  import type { UIConfig, LogoConfig } from '@/controller/landingController'
   import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
   import { useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import { useTheme } from '@/composables/useTheme'
+  import { useAuthUserStore } from '@/stores/authUser'
 
   interface Props {
     config?: UIConfig | null
@@ -11,6 +12,7 @@
 
   const props = defineProps<Props>()
   const router = useRouter()
+  const authStore = useAuthUserStore()
 
   // Vuetify display composable for responsiveness
   const { mobile, mdAndUp, lgAndUp, xs, sm, md } = useDisplay()
@@ -75,53 +77,11 @@
     handleToggleTheme()
   }
 
-  function handleNavigation (item: NavigationItem) {
-    // Close drawer on mobile after navigation
-    drawer.value = false
-
-    switch (item.action) {
-      case 'scroll': {
-        scrollToSection(item.target)
-        break
-      }
-      case 'navigate': {
-        router.push(item.target)
-        break
-      }
-      case 'external': {
-        window.open(item.target, '_blank', 'noopener,noreferrer')
-        break
-      }
-    }
-  }
-
-  function handleCTAAction (button: CTAButton) {
-    // Close drawer on mobile after CTA action
-    drawer.value = false
-
-    switch (button.action) {
-      case 'scroll': {
-        scrollToSection(button.target)
-        break
-      }
-      case 'navigate': {
-        router.push(button.target)
-        break
-      }
-      case 'external': {
-        window.open(button.target, '_blank', 'noopener,noreferrer')
-        break
-      }
-    }
-  }
-
-  function scrollToSection (sectionId: string) {
-    const element = document.querySelector(`#${sectionId}`)
-    if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      })
+  async function handleLogout () {
+    try {
+      await authStore.signOut()
+    } catch (error) {
+      console.error('Logout failed:', error)
     }
   }
 </script>
@@ -209,34 +169,9 @@
 
       <v-spacer />
 
-      <!-- Desktop Navigation - Hidden on mobile and small tablets -->
+      <!-- Desktop Actions -->
       <template #append>
         <div class="d-flex align-center" v-if="lgAndUp">
-          <!-- Navigation Buttons -->
-          <div class="d-flex align-center me-4">
-            <v-btn
-              v-for="(item, index) in navbarConfig.navigationItems"
-              :key="item.label"
-              :class="[
-                'mx-1',
-                { 'd-none d-xl-flex': index > 1 }
-              ]"
-              variant="text"
-              rounded="pill"
-              size="large"
-              @click="handleNavigation(item)"
-            >
-              <v-icon
-                start
-                size="small"
-                :icon="`mdi-${index === 0 ? 'star' : 'information'}`"
-              />
-              <span :class="{ 'd-none d-lg-inline': index > 0 }">
-                {{ item.label }}
-              </span>
-            </v-btn>
-          </div>
-
           <!-- Theme Toggle Menu -->
           <v-menu location="bottom">
             <template #activator="{ props: menuProps }">
@@ -246,7 +181,6 @@
                 variant="outlined"
                 rounded="pill"
                 size="large"
-                class="me-3"
                 :prepend-icon="themeIcon"
               >
                 <span>Theme</span>
@@ -271,23 +205,18 @@
             </v-card>
           </v-menu>
 
-          <!-- CTA Button -->
+          <!-- Logout Button -->
           <v-btn
-            v-if="navbarConfig.ctaButton"
-            :color="navbarConfig.ctaButton.color"
-            variant="elevated"
-            size="large"
+            :loading="authStore.loading"
+            variant="outlined"
             rounded="pill"
-            class="px-6"
-            prepend-icon="mdi-rocket-launch-outline"
-            @click="handleCTAAction(navbarConfig.ctaButton)"
+            size="large"
+            color="error"
+            prepend-icon="mdi-logout"
+            class="ml-2"
+            @click="handleLogout"
           >
-            {{ navbarConfig.ctaButton.label }}
-            <v-icon
-              end
-              icon="mdi-arrow-right"
-              class="ms-1"
-            />
+            <span>Logout</span>
           </v-btn>
         </div>
 
@@ -391,19 +320,6 @@
 
       <!-- Navigation List -->
       <v-list nav class="py-0">
-        <!-- Navigation Items -->
-        <v-list-item
-          v-for="(item, index) in navbarConfig.navigationItems"
-          :key="item.label"
-          :prepend-icon="`mdi-${index === 0 ? 'star' : 'information'}`"
-          :title="item.label"
-          rounded="xl"
-          class="ma-2"
-          @click="handleNavigation(item)"
-        />
-
-        <v-divider class="my-2" />
-
         <!-- Theme Toggle -->
         <v-list-group value="Theme">
           <template #activator="{ props: activatorProps }">
@@ -434,29 +350,23 @@
             @click="currentTheme === 'light' && toggleTheme()"
           />
         </v-list-group>
+
+        <!-- Logout -->
+        <v-list-item
+          prepend-icon="mdi-logout"
+          title="Logout"
+          rounded="xl"
+          class="ma-2"
+          color="error"
+          @click="handleLogout"
+        />
       </v-list>
 
-      <!-- CTA Button at Bottom -->
+      <!-- Empty append section -->
       <template #append>
-        <v-card flat class="pa-4">
-          <v-btn
-            v-if="navbarConfig.ctaButton"
-            :color="navbarConfig.ctaButton.color"
-            variant="elevated"
-            size="large"
-            rounded="pill"
-            block
-            prepend-icon="mdi-rocket-launch-outline"
-            @click="handleCTAAction(navbarConfig.ctaButton)"
-          >
-            {{ navbarConfig.ctaButton.label }}
-            <v-icon
-              end
-              icon="mdi-arrow-right"
-              class="ms-1"
-            />
-          </v-btn>
-        </v-card>
+        <div class="pa-4">
+          <!-- No CTA button for inner navbar -->
+        </div>
       </template>
     </v-navigation-drawer>
 

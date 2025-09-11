@@ -1,19 +1,22 @@
 <template>
   <v-app>
     <!-- Dynamic Navbar Selection -->
-    <OuterNavbar
+    <InsideNavbar1
       v-if="data?.ui?.navbarComponent === '1'"
       :config="data?.ui"
     />
-    <OuterNavbar2
+
+    <InsideNavbar2
       v-else-if="data?.ui?.navbarComponent === '2'"
       :config="data?.ui"
     />
-    <OuterNavbar3
+
+    <InsideNavbar3
       v-else-if="data?.ui?.navbarComponent === '3'"
       :config="data?.ui"
     />
-    <OuterNavbar4
+
+    <InsideNavbar4
       v-else-if="data?.ui?.navbarComponent === '4'"
       :config="data?.ui"
     />
@@ -23,25 +26,18 @@
     </v-main>
 
     <!-- Dynamic Footer Selection -->
-    <OuterFooter
+    <!-- TODO: Create InnerFooter component when needed -->
+    <!-- <InnerFooter
       v-if="data?.ui?.footerComponent === '1'"
       :config="data?.ui"
-    />
-    <OuterFooter2
-      v-else-if="data?.ui?.footerComponent === '2'"
-      :config="data?.ui"
-    />
+    /> -->
   </v-app>
 </template>
 
 <script lang="ts" setup>
   import { onMounted } from 'vue'
-  import OuterFooter from '@/components/common/outerFooters/OuterFooter.vue'
-  import OuterFooter2 from '@/components/common/outerFooters/OuterFooter2.vue'
-  import OuterNavbar from '@/components/common/outerNavbars/OuterNavbar1.vue'
-  import OuterNavbar2 from '@/components/common/outerNavbars/OuterNavbar2.vue'
-  import OuterNavbar3 from '@/components/common/outerNavbars/OuterNavbar3.vue'
-  import OuterNavbar4 from '@/components/common/outerNavbars/OuterNavbar4.vue'
+
+
   import { useLandingController } from '@/controller/landingController'
 
   const { data, fetchLandingData } = useLandingController()
