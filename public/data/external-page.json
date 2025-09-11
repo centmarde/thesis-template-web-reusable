@@ -44,7 +44,7 @@
     "showNavbar": true,
     "showFooter": true,
     "_comment": "Select the navbar component to use: 1, 2, 3, or 4",
-    "navbarComponent": "4",
+    "navbarComponent": "1",
     "_footerComment": "Select the footer component to use: 1 or 2",
     "footerComponent": "2",
     "navbar": {

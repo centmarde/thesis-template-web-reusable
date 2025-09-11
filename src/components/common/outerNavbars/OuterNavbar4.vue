@@ -340,6 +340,17 @@
           class="mb-2 mobile-nav-item"
           @click="handleNavigation(item)"
         />
+
+        <!-- Mobile CTA Button as List Item -->
+        <v-list-item
+          v-if="navbarConfig.ctaButton"
+          :title="navbarConfig.ctaButton.label"
+          prepend-icon="mdi-rocket-launch-outline"
+          rounded="xl"
+          class="mb-2 mobile-nav-item mobile-cta-item"
+          :class="`text-${navbarConfig.ctaButton.color}`"
+          @click="handleCTAAction(navbarConfig.ctaButton)"
+        />
       </v-list>
 
       <v-divider class="my-4 mx-4" />
@@ -356,27 +367,12 @@
             block
             variant="outlined"
             :prepend-icon="themeIcon"
-            class="mb-3"
             size="large"
             rounded="lg"
             :loading="isLoadingTheme"
             @click="toggleTheme"
           >
             {{ themeTooltip }}
-          </v-btn>
-
-          <!-- Mobile CTA -->
-          <v-btn
-            v-if="navbarConfig.ctaButton"
-            block
-            :color="navbarConfig.ctaButton.color"
-            :variant="navbarConfig.ctaButton.variant"
-            size="large"
-            prepend-icon="mdi-rocket-launch-outline"
-            rounded="lg"
-            @click="handleCTAAction(navbarConfig.ctaButton)"
-          >
-            {{ navbarConfig.ctaButton.label }}
           </v-btn>
         </v-card>
       </template>
@@ -462,6 +458,19 @@
 .mobile-nav-item.v-list-item--active {
   background: rgba(var(--v-theme-primary), 0.12) !important;
   color: rgb(var(--v-theme-primary));
+}
+
+/* Mobile CTA Item Styling */
+.mobile-cta-item {
+  background: rgba(var(--v-theme-primary), 0.1) !important;
+  border: 1px solid rgba(var(--v-theme-primary), 0.2);
+  font-weight: 600;
+}
+
+.mobile-cta-item:hover {
+  background: rgba(var(--v-theme-primary), 0.15) !important;
+  transform: translateX(12px);
+  box-shadow: 0 4px 8px rgba(var(--v-theme-primary), 0.2);
 }
 
 /* Animations */
