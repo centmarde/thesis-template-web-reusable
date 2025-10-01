@@ -5,6 +5,8 @@
   import { useDisplay } from 'vuetify'
   import { useTheme } from '@/composables/useTheme'
   import { useAuthUserStore } from '@/stores/authUser'
+  import SlugName from './SlugName.vue'
+  import { navigationConfig, type NavigationGroup, type NavigationItem } from '@/utils/navigation'
 
   interface Props {
     config?: UIConfig | null
@@ -205,19 +207,8 @@
             </v-card>
           </v-menu>
 
-          <!-- Logout Button -->
-          <v-btn
-            :loading="authStore.loading"
-            variant="outlined"
-            rounded="pill"
-            size="large"
-            color="error"
-            prepend-icon="mdi-logout"
-            class="ml-2"
-            @click="handleLogout"
-          >
-            <span>Logout</span>
-          </v-btn>
+          <!-- User Slug Name Component -->
+          <SlugName class="ml-2" />
         </div>
 
         <!-- Mobile Menu Button -->
@@ -320,6 +311,35 @@
 
       <!-- Navigation List -->
       <v-list nav class="py-0">
+        <template v-for="group in navigationConfig" :key="group.title">
+          <!-- Navigation Group -->
+          <v-list-group :value="group.title">
+            <template #activator="{ props: activatorProps }">
+              <v-list-item
+                v-bind="activatorProps"
+                :prepend-icon="group.icon"
+                :title="group.title"
+                rounded="xl"
+                class="ma-2"
+              />
+            </template>
+
+            <!-- Navigation Items -->
+            <v-list-item
+              v-for="item in group.children"
+              :key="item.route"
+              :prepend-icon="item.icon"
+              :title="item.title"
+              :to="item.route"
+              rounded="xl"
+              class="ma-2 ms-4"
+              @click="drawer = false"
+            />
+          </v-list-group>
+        </template>
+
+        <v-divider class="my-2 mx-4" />
+
         <!-- Theme Toggle -->
         <v-list-group value="Theme">
           <template #activator="{ props: activatorProps }">
@@ -350,22 +370,12 @@
             @click="currentTheme === 'light' && toggleTheme()"
           />
         </v-list-group>
-
-        <!-- Logout -->
-        <v-list-item
-          prepend-icon="mdi-logout"
-          title="Logout"
-          rounded="xl"
-          class="ma-2"
-          color="error"
-          @click="handleLogout"
-        />
       </v-list>
 
-      <!-- Empty append section -->
+      <!-- User Menu -->
       <template #append>
         <div class="pa-4">
-          <!-- No CTA button for inner navbar -->
+          <SlugName />
         </div>
       </template>
     </v-navigation-drawer>

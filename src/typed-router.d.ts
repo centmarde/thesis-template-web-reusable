@@ -19,8 +19,17 @@ declare module 'vue-router/auto-routes' {
    */
   export interface RouteNamedMap {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
+    '/admin/AdminUserRolesView': RouteRecordInfo<'/admin/AdminUserRolesView', '/admin/AdminUserRolesView', Record<never, never>, Record<never, never>>,
+    '/admin/components/dialogs/DeleteUserDialog': RouteRecordInfo<'/admin/components/dialogs/DeleteUserDialog', '/admin/components/dialogs/DeleteUserDialog', Record<never, never>, Record<never, never>>,
+    '/admin/components/dialogs/EditUserDialog': RouteRecordInfo<'/admin/components/dialogs/EditUserDialog', '/admin/components/dialogs/EditUserDialog', Record<never, never>, Record<never, never>>,
+    '/admin/components/dialogs/UserDetailsDialog': RouteRecordInfo<'/admin/components/dialogs/UserDetailsDialog', '/admin/components/dialogs/UserDetailsDialog', Record<never, never>, Record<never, never>>,
+    '/admin/components/UserManagementTable': RouteRecordInfo<'/admin/components/UserManagementTable', '/admin/components/UserManagementTable', Record<never, never>, Record<never, never>>,
+    '/admin/dialogs/AdminUserRolesDialog': RouteRecordInfo<'/admin/dialogs/AdminUserRolesDialog', '/admin/dialogs/AdminUserRolesDialog', Record<never, never>, Record<never, never>>,
+    '/admin/UserManagementView': RouteRecordInfo<'/admin/UserManagementView', '/admin/UserManagementView', Record<never, never>, Record<never, never>>,
     '/Auth': RouteRecordInfo<'/Auth', '/Auth', Record<never, never>, Record<never, never>>,
-    '/Home': RouteRecordInfo<'/Home', '/Home', Record<never, never>, Record<never, never>>,
+    '/ForbiddenView': RouteRecordInfo<'/ForbiddenView', '/ForbiddenView', Record<never, never>, Record<never, never>>,
+    '/HomeView': RouteRecordInfo<'/HomeView', '/HomeView', Record<never, never>, Record<never, never>>,
     '/NotFound': RouteRecordInfo<'/NotFound', '/NotFound', Record<never, never>, Record<never, never>>,
+    '/otherTab/Page1View': RouteRecordInfo<'/otherTab/Page1View', '/otherTab/Page1View', Record<never, never>, Record<never, never>>,
   }
 }

@@ -5,6 +5,8 @@
   import { useTheme } from '@/composables/useTheme'
   import { useDisplay } from 'vuetify'
   import { useAuthUserStore } from '@/stores/authUser'
+  import SlugName from './SlugName.vue'
+  import { navigationConfig, type NavigationGroup, type NavigationItem } from '@/utils/navigation'
 
   interface Props {
     config?: UIConfig | null
@@ -172,21 +174,8 @@
               </v-btn>
             </v-badge>
 
-            <!-- Logout Button -->
-            <v-btn
-              :loading="authStore.loading"
-              size="large"
-              variant="text"
-              rounded="xl"
-              color="error"
-              aria-label="Logout"
-              @click="handleLogout"
-            >
-              <v-icon icon="mdi-logout" />
-              <v-tooltip activator="parent" location="bottom">
-                Logout
-              </v-tooltip>
-            </v-btn>
+            <!-- User Slug Name Component -->
+            <SlugName />
           </div>
         </div>
 
@@ -263,6 +252,35 @@
 
       <!-- Navigation Items -->
       <v-list nav>
+        <template v-for="group in navigationConfig" :key="group.title">
+          <!-- Navigation Group -->
+          <v-list-group :value="group.title">
+            <template #activator="{ props: activatorProps }">
+              <v-list-item
+                v-bind="activatorProps"
+                :prepend-icon="group.icon"
+                :title="group.title"
+                rounded="xl"
+                class="ma-2"
+              />
+            </template>
+
+            <!-- Navigation Items -->
+            <v-list-item
+              v-for="item in group.children"
+              :key="item.route"
+              :prepend-icon="item.icon"
+              :title="item.title"
+              :to="item.route"
+              rounded="xl"
+              class="ma-2 ms-4"
+              @click="drawer = false"
+            />
+          </v-list-group>
+        </template>
+
+        <v-divider class="my-2 mx-4" />
+
         <!-- Theme Toggle List Item -->
         <v-list-item
           :title="themeTooltip"
@@ -271,22 +289,12 @@
           class="ma-2"
           @click="toggleTheme"
         />
-
-        <!-- Logout List Item -->
-        <v-list-item
-          title="Logout"
-          prepend-icon="mdi-logout"
-          rounded="xl"
-          class="ma-2"
-          color="error"
-          @click="handleLogout"
-        />
       </v-list>
 
-      <!-- Mobile Actions -->
+      <!-- User Menu -->
       <template #append>
         <div class="pa-4 border-t">
-          <!-- Actions section now empty - all moved to list items -->
+          <SlugName />
         </div>
       </template>
     </v-navigation-drawer>

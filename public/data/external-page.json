@@ -1,58 +1,58 @@
 {
-  "title": "Vue 3 + Vuetify 3 Thesis Template",
-  "description": "A modern, reusable thesis template built with Vue 3 and Vuetify 3, featuring TypeScript and zero-config development with extensive plugin automation.",
-  "subtitle": "Streamline Your Academic Writing with Modern Web Technologies",
+  "title": "Scan, Order, Savor: Implementing a QR-Code Based Point of Sale System for D'Home Makers Café",
+  "description": "An innovative food café automation system that revolutionizes dining experiences through QR-code technology, enabling seamless ordering and payment processes based on table identification.",
+  "subtitle": "Transforming Food Service with Smart QR-Code Technology",
   "backgroundImage": {
     "src": "/images/markup.png",
     "alt": "Abstract academic background with geometric patterns",
     "overlay": {
       "enabled": true,
-      "color": "rgba(85, 107, 47, 0.1)",
+      "color": "rgba(139, 69, 19, 0.15)",
       "opacity": 0.8
     }
   },
   "features": [
     {
-      "title": "Zero-Config Development",
-      "description": "File-based auto-generation for pages, components, and layouts with minimal configuration required.",
-      "icon": "mdi-cog-outline"
+      "title": "QR-Code Table Ordering",
+      "description": "Customers scan unique QR codes at their tables to instantly access the digital menu and place orders directly from their smartphones.",
+      "icon": "mdi-qrcode-scan"
     },
     {
-      "title": "Modern Vue 3 Stack",
-      "description": "Built on Vue 3 Composition API with TypeScript, Pinia state management, and Vuetify 3 components.",
-      "icon": "mdi-vuejs"
+      "title": "Real-Time Order Management",
+      "description": "Kitchen staff receive orders instantly with table identification, order status tracking, and preparation time estimates.",
+      "icon": "mdi-chef-hat"
     },
     {
-      "title": "Authentication Ready",
-      "description": "Supabase integration with reactive authentication state and user management.",
-      "icon": "mdi-account-check"
+      "title": "Contactless Payment Integration",
+      "description": "Seamless payment processing through the system with multiple payment options and automated receipt generation.",
+      "icon": "mdi-contactless-payment"
     },
     {
-      "title": "Responsive Design",
-      "description": "Mobile-first approach with Vuetify's Material Design components and responsive layouts.",
-      "icon": "mdi-responsive"
+      "title": "Table Management System",
+      "description": "Efficient table tracking with occupancy status, order history, and customer service optimization for café operations.",
+      "icon": "mdi-table-chair"
     }
   ],
   "version": "1.0.0",
-  "author": "Thesis Template Team",
-  "lastUpdated": "2025-09-03",
+  "author": "D'Home Makers Café Development Team",
+  "lastUpdated": "2025-10-01",
   "theme": {
-    "primaryColor": "#556B2F",
-    "secondaryColor": "#DCDCDC"
+    "primaryColor": "#8B4513",
+    "secondaryColor": "#F4E4BC"
   },
   "ui": {
     "showNavbar": true,
     "showFooter": true,
     "_comment": "Select the navbar component to use: 1, 2, 3, or 4",
-    "navbarComponent": "4",
+    "navbarComponent": "1",
     "_footerComment": "Select the footer component to use: 1 or 2",
     "footerComponent": "1",
     "navbar": {
-      "title": "Thesis Template",
-      "icon": "mdi-school",
+      "title": "D'Home Makers Café POS",
+      "icon": "mdi-store",
       "logo": {
         "src": "/src/assets/logo.svg",
-        "alt": "Thesis Template Logo",
+        "alt": "D'Home Makers Café Logo",
         "width": 32,
         "height": 32
       },
@@ -83,11 +83,11 @@
       }
     },
     "footer": {
-      "companyName": "Thesis Template",
-      "tagline": "Modern academic writing made simple",
-      "icon": "mdi-school",
+      "companyName": "D'Home Makers Café",
+      "tagline": "Smart dining through QR-code technology",
+      "icon": "mdi-coffee",
       "color": "grey-darken-3",
-      "copyright": "Thesis Template Team. All rights reserved.",
+      "copyright": "D'Home Makers Café Team. All rights reserved.",
       "socialLinks": [
         {
           "platform": "github",
@@ -110,34 +110,34 @@
       ],
       "technologies": [
         {
-          "name": "Vue 3",
-          "icon": "mdi-vuejs",
-          "color": "green"
+          "name": "QR Code",
+          "icon": "mdi-qrcode",
+          "color": "brown"
         },
         {
-          "name": "Vuetify 3",
-          "icon": "mdi-material-design",
-          "color": "blue"
+          "name": "Point of Sale",
+          "icon": "mdi-cash-register",
+          "color": "orange"
         }
       ],
       "thesisTeam": {
         "enabled": true,
-        "title": "Thesis Team",
-        "subtitle": "Meet the minds behind your academic success",
+        "title": "Development Team",
+        "subtitle": "Meet the minds behind your café automation system",
         "members": [
           {
-            "name": "Dr. Sarah Johnson",
-            "role": "Lead Researcher",
+            "name": "Lead Developer",
+            "role": "System Architect",
             "avatar": "/images/team/sarah.jpg"
           },
           {
-            "name": "Prof. Michael Chen",
-            "role": "Academic Advisor",
+            "name": "UX Designer",
+            "role": "User Experience Specialist",
             "avatar": "/images/team/michael.jpg"
           },
           {
-            "name": "Emma Rodriguez",
-            "role": "Writing Specialist",
+            "name": "QR Specialist",
+            "role": "QR Technology Expert",
             "avatar": "/images/team/emma.jpg"
           }
         ]
@@ -145,23 +145,23 @@
     }
   },
   "authPage": {
-    "title": "Welcome to Your Academic Journey",
-    "subtitle": "Access your thesis template workspace",
+    "title": "Welcome to D'Home Makers Café POS System",
+    "subtitle": "Access your QR-code based point of sale workspace",
     "layout": {
       "quotePosition": "right"
     },
     "quote": {
-      "text": "The best time to plant a tree was 20 years ago. The second best time is now.",
-      "author": "Chinese Proverb",
-      "source": "Ancient Wisdom",
-      "motivationalText": "Start your journey today. Every great achievement begins with a single step forward."
+      "text": "Innovation distinguishes between a leader and a follower.",
+      "author": "Steve Jobs",
+      "source": "Tech Visionary",
+      "motivationalText": "Start your digital café journey today. Every great service begins with smart technology."
     },
     "backgroundImage": {
       "src": "/images/auth-background.jpg",
-      "alt": "Academic workspace with books and laptop",
+      "alt": "Modern café interior with QR codes on tables",
       "overlay": {
         "enabled": true,
-        "color": "rgba(85, 107, 47, 0.05)",
+        "color": "rgba(139, 69, 19, 0.1)",
         "opacity": 0.9
       }
     }

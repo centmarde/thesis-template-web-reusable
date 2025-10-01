@@ -5,6 +5,8 @@
   import { useTheme } from '@/composables/useTheme'
   import { useDisplay } from 'vuetify'
   import { useAuthUserStore } from '@/stores/authUser'
+  import SlugName from './SlugName.vue'
+  import { navigationConfig, type NavigationGroup, type NavigationItem } from '@/utils/navigation'
 
   interface Props {
     config?: UIConfig | null
@@ -121,41 +123,61 @@
 
     <v-divider />
 
-    <!-- Mobile Actions -->
-    <div class="pa-4">
-      <!-- Theme Toggle -->
-      <v-btn
-        :loading="isLoadingTheme"
-        variant="outlined"
-        block
-        class="mb-2"
-        @click="toggleTheme"
-      >
-        <v-icon :icon="themeIcon" class="me-2" />
-        {{ themeTooltip }}
-      </v-btn>
+    <!-- Navigation Menu -->
+    <v-list nav class="py-2">
+      <template v-for="group in navigationConfig" :key="group.title">
+        <!-- Navigation Group -->
+        <v-list-group :value="group.title">
+          <template #activator="{ props: activatorProps }">
+            <v-list-item
+              v-bind="activatorProps"
+              :prepend-icon="group.icon"
+              :title="group.title"
+              rounded="xl"
+              class="ma-2"
+            />
+          </template>
 
-      <!-- Logout Button -->
-      <v-btn
-        :loading="authStore.loading"
-        variant="outlined"
-        block
-        color="error"
-        @click="handleLogout"
-      >
-        <v-icon icon="mdi-logout" class="me-2" />
-        Logout
-      </v-btn>
-    </div>
+          <!-- Navigation Items -->
+          <v-list-item
+            v-for="item in group.children"
+            :key="item.route"
+            :prepend-icon="item.icon"
+            :title="item.title"
+            :to="item.route"
+            rounded="xl"
+            class="ma-2 ms-4"
+            @click="mobileDrawer = false"
+          />
+        </v-list-group>
+      </template>
+
+      <v-divider class="my-2 mx-4" />
+
+      <!-- Theme Toggle -->
+      <v-list-item
+        :title="themeTooltip"
+        :prepend-icon="themeIcon"
+        rounded="xl"
+        class="ma-2"
+        @click="toggleTheme"
+      />
+
+      <!-- User Menu with SlugName -->
+      <div class="pa-2">
+        <SlugName />
+      </div>
+    </v-list>
   </v-navigation-drawer>
 
   <!-- Main Toolbar -->
   <v-toolbar
     v-if="config?.showNavbar && navbarConfig"
-    app
     :color="navbarConfig.color"
     :density="navbarConfig.density"
     :elevation="navbarConfig.elevation"
+    class="navbar-toolbar"
+    fixed
   >
     <template #prepend>
       <!-- Mobile Hamburger Menu -->
@@ -221,19 +243,36 @@
         </v-tooltip>
       </v-btn>
 
-      <!-- Logout Button -->
-      <v-btn
-        :loading="authStore.loading"
-        size="small"
-        variant="text"
-        color="error"
-        @click="handleLogout"
-      >
-        <v-icon icon="mdi-logout" />
-        <v-tooltip activator="parent" location="bottom">
-          Logout
-        </v-tooltip>
-      </v-btn>
+      <!-- User Slug Name Component -->
+      <SlugName />
     </template>
   </v-toolbar>
 </template>
+
+<style scoped>
+/* Navbar positioning to work with sidebar */
+.navbar-toolbar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 280px !important; /* Position to the right of sidebar */
+  right: 0 !important;
+  width: calc(100% - 280px) !important; /* Adjust width to account for sidebar */
+  z-index: 1001 !important; /* Above sidebar but below overlays */
+}
+
+/* Responsive behavior for small screens */
+@media (max-width: 959px) {
+  .navbar-toolbar {
+    left: 0 !important;
+    width: 100% !important;
+    z-index: 1010 !important; /* Higher z-index on mobile for mobile drawer */
+  }
+}
+
+/* Mobile drawer responsive positioning */
+@media (max-width: 959px) {
+  .v-navigation-drawer {
+    z-index: 1005 !important; /* Ensure mobile drawer is above toolbar */
+  }
+}
+</style>
