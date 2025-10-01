@@ -5,6 +5,8 @@
   import { useTheme } from '@/composables/useTheme'
   import { useDisplay } from 'vuetify'
   import { useAuthUserStore } from '@/stores/authUser'
+  import SlugName from './SlugName.vue'
+  import { navigationConfig, type NavigationGroup, type NavigationItem } from '@/utils/navigation'
 
   interface Props {
     config?: UIConfig | null
@@ -168,19 +170,8 @@
             </v-tooltip>
           </v-btn>
 
-          <!-- Logout Button -->
-          <v-btn
-            icon="mdi-logout"
-            variant="text"
-            size="large"
-            color="error"
-            :loading="authStore.loading"
-            @click="handleLogout"
-          >
-            <v-tooltip activator="parent" location="bottom">
-              Logout
-            </v-tooltip>
-          </v-btn>
+          <!-- User Slug Name Component -->
+          <SlugName />
         </div>
 
         <!-- Mobile Menu Toggle -->
@@ -267,6 +258,36 @@
 
       <v-divider class="my-4 mx-4" />
 
+      <!-- Navigation Menu -->
+      <v-list nav class="px-2">
+        <template v-for="group in navigationConfig" :key="group.title">
+          <!-- Navigation Group -->
+          <v-list-group :value="group.title">
+            <template #activator="{ props: activatorProps }">
+              <v-list-item
+                v-bind="activatorProps"
+                :prepend-icon="group.icon"
+                :title="group.title"
+                rounded="xl"
+                class="ma-1"
+              />
+            </template>
+
+            <!-- Navigation Items -->
+            <v-list-item
+              v-for="item in group.children"
+              :key="item.route"
+              :prepend-icon="item.icon"
+              :title="item.title"
+              :to="item.route"
+              rounded="xl"
+              class="ma-1 ms-4"
+              @click="mobileDrawer = false"
+            />
+          </v-list-group>
+        </template>
+      </v-list>
+
       <!-- Mobile Actions -->
       <template #append>
         <v-card
@@ -288,20 +309,8 @@
             {{ currentTheme === 'dark' ? 'Light' : 'Dark' }}
           </v-btn>
 
-          <!-- Logout Button -->
-          <v-btn
-            block
-            variant="outlined"
-            prepend-icon="mdi-logout"
-            size="small"
-            rounded="lg"
-            color="error"
-            :loading="authStore.loading"
-            @click="handleLogout"
-            class="text-caption"
-          >
-            Logout
-          </v-btn>
+          <!-- User Menu with SlugName -->
+          <SlugName />
         </v-card>
       </template>
     </v-navigation-drawer>

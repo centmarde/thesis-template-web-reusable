@@ -99,7 +99,7 @@ export function createLightTheme (primaryColor: string, secondaryColor: string) 
 
       // Background and surface colors
       'background': '#FEFFFE',
-      'surface': '#F9FCF2',
+      'surface': secondaryColor,
       'surface-bright': '#FFFFFF',
       'surface-light': secondaryColor,
       'surface-variant': adjustColor(secondaryColor, -0.05),
