@@ -1,44 +1,44 @@
 {
-  "title": "Scan, Order, Savor: Implementing a QR-Code Based Point of Sale System for D'Home Makers Café",
-  "description": "An innovative food café automation system that revolutionizes dining experiences through QR-code technology, enabling seamless ordering and payment processes based on table identification.",
-  "subtitle": "Transforming Food Service with Smart QR-Code Technology",
+  "title": "Modern Thesis Template System",
+  "description": "A comprehensive Vue 3 + Vuetify 3 template system designed specifically for academic thesis applications. Features robust authentication, role-based access control, and automated routing with zero-config development experience.",
+  "subtitle": "Streamline Your Academic Development with Professional Templates",
   "backgroundImage": {
     "src": "/images/markup.png",
     "alt": "Abstract academic background with geometric patterns",
     "overlay": {
       "enabled": true,
-      "color": "rgba(139, 69, 19, 0.15)",
+      "color": "rgba(63, 81, 181, 0.15)",
       "opacity": 0.8
     }
   },
   "features": [
     {
-      "title": "QR-Code Table Ordering",
-      "description": "Customers scan unique QR codes at their tables to instantly access the digital menu and place orders directly from their smartphones.",
-      "icon": "mdi-qrcode-scan"
+      "title": "Built-in Authentication System",
+      "description": "Complete authentication flow with Supabase integration, including login, registration, password reset, and session management with reactive state.",
+      "icon": "mdi-shield-account"
     },
     {
-      "title": "Real-Time Order Management",
-      "description": "Kitchen staff receive orders instantly with table identification, order status tracking, and preparation time estimates.",
-      "icon": "mdi-chef-hat"
+      "title": "Role-Based Auth Guards",
+      "description": "Sophisticated route protection system with user roles, permissions, and automated redirection to ensure secure access to protected resources.",
+      "icon": "mdi-security"
     },
     {
-      "title": "Contactless Payment Integration",
-      "description": "Seamless payment processing through the system with multiple payment options and automated receipt generation.",
-      "icon": "mdi-contactless-payment"
+      "title": "Auto-Generated Navigation",
+      "description": "File-based routing system that automatically generates navigation menus, breadcrumbs, and route structures from your page components.",
+      "icon": "mdi-router-wireless"
     },
     {
-      "title": "Table Management System",
-      "description": "Efficient table tracking with occupancy status, order history, and customer service optimization for café operations.",
-      "icon": "mdi-table-chair"
+      "title": "Zero-Config Development",
+      "description": "Extensive plugin automation with auto-imports, component registration, and Vuetify-first UI development for rapid thesis application creation.",
+      "icon": "mdi-auto-fix"
     }
   ],
   "version": "1.0.0",
-  "author": "D'Home Makers Café Development Team",
-  "lastUpdated": "2025-10-01",
+  "author": "Academic Development Team",
+  "lastUpdated": "2024-12-24",
   "theme": {
-    "primaryColor": "#8B4513",
-    "secondaryColor": "#F4E4BC"
+    "primaryColor": "#3F51B5",
+    "secondaryColor": "#7688e0"
   },
   "ui": {
     "showNavbar": true,
@@ -48,11 +48,11 @@
     "_footerComment": "Select the footer component to use: 1 or 2",
     "footerComponent": "1",
     "navbar": {
-      "title": "D'Home Makers Café POS",
-      "icon": "mdi-store",
+      "title": "Thesis Template System",
+      "icon": "mdi-school",
       "logo": {
         "src": "/src/assets/logo.svg",
-        "alt": "D'Home Makers Café Logo",
+        "alt": "Thesis Template System Logo",
         "width": 32,
         "height": 32
       },
@@ -83,11 +83,11 @@
       }
     },
     "footer": {
-      "companyName": "D'Home Makers Café",
-      "tagline": "Smart dining through QR-code technology",
-      "icon": "mdi-coffee",
+      "companyName": "Academic Template System",
+      "tagline": "Empowering academic development with modern tools",
+      "icon": "mdi-school-outline",
       "color": "grey-darken-3",
-      "copyright": "D'Home Makers Café Team. All rights reserved.",
+      "copyright": "Academic Development Team. All rights reserved.",
       "socialLinks": [
         {
           "platform": "github",
@@ -110,58 +110,68 @@
       ],
       "technologies": [
         {
-          "name": "QR Code",
-          "icon": "mdi-qrcode",
-          "color": "brown"
+          "name": "Vue 3",
+          "icon": "mdi-vuejs",
+          "color": "green"
         },
         {
-          "name": "Point of Sale",
-          "icon": "mdi-cash-register",
-          "color": "orange"
+          "name": "Vuetify 3",
+          "icon": "mdi-material-design",
+          "color": "blue"
+        },
+        {
+          "name": "TypeScript",
+          "icon": "mdi-language-typescript",
+          "color": "indigo"
+        },
+        {
+          "name": "Supabase Auth",
+          "icon": "mdi-database-lock",
+          "color": "teal"
         }
       ],
       "thesisTeam": {
         "enabled": true,
         "title": "Development Team",
-        "subtitle": "Meet the minds behind your café automation system",
+        "subtitle": "Meet the architects behind your thesis template system",
         "members": [
           {
-            "name": "Lead Developer",
-            "role": "System Architect",
-            "avatar": "/images/team/sarah.jpg"
+            "name": "Template Architect",
+            "role": "System Design & Architecture",
+            "avatar": "/images/team/architect.jpg"
           },
           {
-            "name": "UX Designer",
-            "role": "User Experience Specialist",
-            "avatar": "/images/team/michael.jpg"
+            "name": "Auth Specialist",
+            "role": "Authentication & Security",
+            "avatar": "/images/team/auth-specialist.jpg"
           },
           {
-            "name": "QR Specialist",
-            "role": "QR Technology Expert",
-            "avatar": "/images/team/emma.jpg"
+            "name": "UI/UX Developer",
+            "role": "Vuetify & Component Design",
+            "avatar": "/images/team/ui-developer.jpg"
           }
         ]
       }
     }
   },
   "authPage": {
-    "title": "Welcome to D'Home Makers Café POS System",
-    "subtitle": "Access your QR-code based point of sale workspace",
+    "title": "Welcome to Thesis Template System",
+    "subtitle": "Access your academic development workspace with secure authentication",
     "layout": {
       "quotePosition": "right"
     },
     "quote": {
-      "text": "Innovation distinguishes between a leader and a follower.",
-      "author": "Steve Jobs",
-      "source": "Tech Visionary",
-      "motivationalText": "Start your digital café journey today. Every great service begins with smart technology."
+      "text": "The best way to predict the future is to create it.",
+      "author": "Peter Drucker",
+      "source": "Management Consultant",
+      "motivationalText": "Start your academic journey with confidence. Every great thesis begins with the right foundation."
     },
     "backgroundImage": {
       "src": "/images/auth-background.jpg",
-      "alt": "Modern café interior with QR codes on tables",
+      "alt": "Modern academic workspace with books and technology",
       "overlay": {
         "enabled": true,
-        "color": "rgba(139, 69, 19, 0.1)",
+        "color": "rgba(63, 81, 181, 0.1)",
         "opacity": 0.9
       }
     }
