@@ -29,6 +29,36 @@
 
   const navbarConfig = computed(() => props.config?.navbar)
 
+  // Positioning logic that accounts for sidebar
+  const navbarPositioning = computed(() => {
+    const sidebarWidth = 280 // Match the sidebar width
+
+    if (lgAndUp.value) {
+      // Desktop: Position navbar in the content area (after sidebar)
+      const availableWidth = `calc(100vw - ${sidebarWidth}px)`
+      const margin = isScrolled.value ? 10 : 20
+      const navbarWidth = `calc(${availableWidth} - ${margin * 2}px)`
+
+      return {
+        top: isScrolled.value ? '10px' : '20px',
+        left: `${sidebarWidth + margin}px`,
+        transform: isScrolled.value ? 'scale(0.98)' : 'scale(1)',
+        width: navbarWidth,
+        maxWidth: `calc(1200px - ${sidebarWidth}px - ${margin * 2}px)`,
+        right: `${margin}px`
+      }
+    } else {
+      // Mobile: Full width positioning (sidebar is hidden)
+      return {
+        top: isScrolled.value ? (xs.value ? '4px' : '10px') : (xs.value ? '8px' : '20px'),
+        left: '50%',
+        transform: `translateX(-50%) ${isScrolled.value ? 'scale(0.98)' : 'scale(1)'}`,
+        width: isScrolled.value ? (xs.value ? '96%' : '90%') : (xs.value ? '98%' : '95%'),
+        maxWidth: '1200px'
+      }
+    }
+  })
+
   // Theme toggle computed properties
   const currentTheme = computed(() => getCurrentTheme())
   const themeIcon = computed(() => {
@@ -98,14 +128,14 @@
       position="fixed"
       class="mx-auto px-2"
       :style="{
-        top: isScrolled ? (xs ? '4px' : '10px') : (xs ? '8px' : '20px'),
-        left: '50%',
-        transform: `translateX(-50%) ${isScrolled ? 'scale(0.98)' : 'scale(1)'}`,
-        width: isScrolled ? (xs ? '96%' : '90%') : (xs ? '98%' : '95%'),
-        maxWidth: '1200px',
+        top: navbarPositioning.top,
+        left: navbarPositioning.left,
+        transform: navbarPositioning.transform,
+        width: navbarPositioning.width,
+        maxWidth: navbarPositioning.maxWidth,
+        right: navbarPositioning.right,
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
       }"
-
     >
       <!-- Logo Section with Badge -->
       <template #prepend>
