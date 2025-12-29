@@ -44,6 +44,12 @@ export const navigationConfig: NavigationGroup[] = [
         route: '/admin/user-roles',
         permission: 'admin.roles.manage'
       },
+      {
+        title: 'Announcements',
+        icon: 'mdi-bullhorn',
+        route: '/admin/announcements',
+        permission: 'admin.announcements.manage'
+      },
     ]
   },
 
