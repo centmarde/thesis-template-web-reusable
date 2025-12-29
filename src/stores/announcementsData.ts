@@ -31,6 +31,10 @@ export const useAnnouncementsDataStore = defineStore("announcementsData", () => 
   const announcements: Ref<AnnouncementType[]> = ref([]);
   const currentAnnouncement: Ref<AnnouncementType | undefined> = ref(undefined);
   const loading = ref(false);
+  const loadingMore = ref(false);
+  const hasMore = ref(true);
+  const currentPage = ref(0);
+  const pageSize = ref(12); // Load 12 items per page
   const error: Ref<string> = ref("");
 
   // Computed properties
@@ -50,27 +54,54 @@ export const useAnnouncementsDataStore = defineStore("announcementsData", () => 
     error.value = "";
   };
 
-  // Fetch all announcements
-  const fetchAnnouncements = async () => {
-    loading.value = true;
+  // Fetch initial announcements (first page)
+  const fetchAnnouncements = async (reset = false) => {
+    if (reset) {
+      loading.value = true;
+      announcements.value = [];
+      currentPage.value = 0;
+      hasMore.value = true;
+    } else {
+      loadingMore.value = true;
+    }
     clearError();
 
     try {
       const { data, error: fetchError } = await supabase
         .from("announcements")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .range(currentPage.value * pageSize.value, (currentPage.value + 1) * pageSize.value - 1);
 
       if (fetchError) {
         throw fetchError;
       }
 
-      announcements.value = data || [];
+      const newAnnouncements = data || [];
+
+      if (reset) {
+        announcements.value = newAnnouncements;
+      } else {
+        announcements.value = [...announcements.value, ...newAnnouncements];
+      }
+
+      // Check if we have more data
+      hasMore.value = newAnnouncements.length === pageSize.value;
+      if (newAnnouncements.length > 0) {
+        currentPage.value += 1;
+      }
     } catch (err) {
       handleError(err, "Failed to fetch announcements");
     } finally {
       loading.value = false;
+      loadingMore.value = false;
     }
+  };
+
+  // Load more announcements
+  const loadMoreAnnouncements = async () => {
+    if (!hasMore.value || loadingMore.value) return;
+    await fetchAnnouncements(false);
   };
 
   // Fetch announcement by ID
@@ -269,6 +300,9 @@ export const useAnnouncementsDataStore = defineStore("announcementsData", () => 
     announcements.value = [];
     currentAnnouncement.value = undefined;
     loading.value = false;
+    loadingMore.value = false;
+    hasMore.value = true;
+    currentPage.value = 0;
     error.value = "";
   };
 
@@ -277,6 +311,10 @@ export const useAnnouncementsDataStore = defineStore("announcementsData", () => 
     announcements,
     currentAnnouncement,
     loading,
+    loadingMore,
+    hasMore,
+    currentPage,
+    pageSize,
     error,
 
     // Computed
@@ -292,6 +330,7 @@ export const useAnnouncementsDataStore = defineStore("announcementsData", () => 
 
     // Actions
     fetchAnnouncements,
+    loadMoreAnnouncements,
     fetchAnnouncementById,
     fetchAnnouncementsByUserId,
     createAnnouncement,
