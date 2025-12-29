@@ -2,8 +2,10 @@
 <script setup lang="ts">
 import { useAuthUserStore } from '@/stores/authUser'
 import { useToast } from 'vue-toastification'
+import { storeToRefs } from 'pinia'
 import InnerLayoutWrapper from '@/layouts/InnerLayoutWrapper.vue'
 import HomeLogs from '@/pages/hometab/HomeLogs.vue'
+import HomeAnnouncements from '@/pages/hometab/HomeAnnouncements.vue'
 
 const authStore = useAuthUserStore()
 const toast = useToast()
@@ -30,12 +32,27 @@ const handleLogout = async () => {
 <template>
   <InnerLayoutWrapper>
     <template #content>
-      <v-container fluid class="fill-height">
-        <v-row justify="center" align="center" class="fill-height">
-          <v-col cols="12" md="12" lg="12">
-            <HomeLogs />
-          </v-col>
-        </v-row>
+      <v-container fluid class="pa-0">
+        <!-- Announcements Carousel Section -->
+        <section class="announcements-section mb-8">
+          <v-container>
+            <HomeAnnouncements />
+          </v-container>
+        </section>
+
+        <!-- Divider -->
+        <v-divider class="mx-4 mb-8" />
+
+        <!-- Logs Section -->
+        <section class="logs-section">
+          <v-container>
+            <v-row justify="center" align="center">
+              <v-col cols="12" md="12" lg="12">
+                <HomeLogs />
+              </v-col>
+            </v-row>
+          </v-container>
+        </section>
       </v-container>
     </template>
   </InnerLayoutWrapper>
