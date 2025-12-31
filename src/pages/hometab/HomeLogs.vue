@@ -124,7 +124,7 @@ watch(logs, () => {
     <v-card-title class="d-flex align-center justify-space-between">
       <div class="d-flex align-center">
         <v-icon icon="mdi-text-box-outline" class="me-2" color="primary"></v-icon>
-        <span>Logs Dashboard</span>
+        <span>System Updates</span>
       </div>
 
       <div class="d-flex align-center ga-2">
@@ -133,7 +133,7 @@ watch(logs, () => {
           variant="tonal"
           size="small"
         >
-          {{ logsCount }} logs
+          {{ logsCount }} Updates
         </v-chip>
 
         <v-btn
@@ -194,36 +194,36 @@ watch(logs, () => {
         </v-btn>
       </div>
 
-      <!-- Posts Layout (Facebook Style) -->
-      <div v-else class="pa-4">
-        <div class="mx-auto" style="max-width: 800px;">
+      <!-- Posts Layout (Minimalist Style) -->
+      <div v-else class="pa-2">
+        <div class="mx-auto" style="max-width: 600px;">
           <div
             v-for="log in displayedLogs"
             :key="log.id"
-            class="mb-4"
+            class="mb-2"
           >
-            <!-- Facebook-style Post Card -->
+            <!-- Minimalist Post Card -->
             <v-card
-              elevation="2"
-              rounded="lg"
+              elevation="1"
+              rounded="md"
               class="w-100"
             >
-              <!-- Post Header -->
-              <v-card-title class="d-flex align-center justify-space-between pa-4 pb-3">
+              <!-- Compact Header -->
+              <v-card-title class="d-flex align-center justify-space-between pa-3 pb-2">
                 <div class="d-flex align-center">
                   <v-avatar
-                    size="40"
+                    size="24"
                     :color="getTypeColor(log.type)"
-                    class="me-3"
+                    class="me-2"
                   >
                     <v-icon
                       :icon="getTypeIcon(log.type)"
                       color="white"
-                      size="20"
+                      size="14"
                     ></v-icon>
                   </v-avatar>
                   <div>
-                    <div class="text-h6 font-weight-medium">
+                    <div class="text-body-1 font-weight-medium">
                       {{ log.title }}
                     </div>
                     <div class="text-caption text-medium-emphasis">
@@ -234,38 +234,31 @@ watch(logs, () => {
 
                 <v-chip
                   :color="getTypeColor(log.type)"
-                  size="small"
+                  size="x-small"
                   variant="tonal"
                 >
                   {{ log.type }}
                 </v-chip>
               </v-card-title>
 
-              <!-- Post Content -->
-              <v-card-text class="pa-4 pt-0">
-                <div class="text-body-1 mb-3">
+              <!-- Compact Content -->
+              <v-card-text class="pa-3 pt-0">
+                <div class="text-body-2">
                   {{ log.description }}
                 </div>
               </v-card-text>
 
-              <!-- Post Footer -->
-              <v-card-actions class="pa-4 pt-0">
-                <div class="d-flex align-center justify-space-between w-100">
-                  <div class="d-flex align-center">
-
-
-                  </div>
-
-                  <div class="d-flex align-center">
-                    <v-icon
-                      icon="mdi-calendar-clock"
-                      size="16"
-                      class="me-1 text-medium-emphasis"
-                    ></v-icon>
-                    <span class="text-caption text-medium-emphasis">
-                      {{ formatDate(log.created_at) }}
-                    </span>
-                  </div>
+              <!-- Minimal Footer -->
+              <v-card-actions class="pa-3 pt-0">
+                <div class="d-flex align-center justify-end w-100">
+                  <v-icon
+                    icon="mdi-calendar-clock"
+                    size="14"
+                    class="me-1 text-medium-emphasis"
+                  ></v-icon>
+                  <span class="text-caption text-medium-emphasis">
+                    {{ formatDate(log.created_at) }}
+                  </span>
                 </div>
               </v-card-actions>
             </v-card>
