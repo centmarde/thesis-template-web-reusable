@@ -22,10 +22,7 @@ interface User {
   user_metadata?: Record<string, any>
   app_metadata?: Record<string, any>
   full_name?: string
-  student_number?: string
-  organization_id?: number
   role_id?: number
-  student_id?: number
 }
 
 // Composables
@@ -46,14 +43,19 @@ const userToDelete = ref<User | null>(null)
 
 
 
-// Table headers
-const headers = [
-  { title: 'Full Name', key: 'full_name', sortable: true },
-  { title: 'Email', key: 'email', sortable: true },
-  { title: 'Role', key: 'role_id', sortable: true },
-  { title: 'Created At', key: 'created_at', sortable: true },
-  { title: 'Actions', key: 'actions', sortable: false },
-]
+// Computed properties
+const filteredUsers = computed(() => {
+  if (!authStore.users) return []
+
+  if (!search.value) return authStore.users
+
+  const searchTerm = search.value.toLowerCase()
+  return authStore.users.filter(user =>
+    user.full_name?.toLowerCase().includes(searchTerm) ||
+    user.email?.toLowerCase().includes(searchTerm) ||
+    getRoleTitle(user.role_id, rolesStore.roles).toLowerCase().includes(searchTerm)
+  )
+})
 
 // Methods
 const fetchUsers = async () => {
@@ -112,7 +114,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-card class="mt-5">
+  <div class="mt-5">
     <v-card-title class="d-flex justify-space-between align-center">
       <div>
         <h3>User Management</h3>
@@ -128,87 +130,132 @@ onMounted(async () => {
       </v-btn> -->
     </v-card-title>
 
-
-
     <v-card-text>
-      <v-data-table
-        :headers="headers"
-        :items="authStore.users"
-        :loading="loading"
-        class="elevation-1"
-        item-key="id"
-        :search="search"
-        show-current-page
-      >
-        <template v-slot:top>
-          <v-row class="ma-2">
-            <v-col cols="12" md="4">
-              <v-text-field
-                v-model="search"
-                prepend-inner-icon="mdi-magnify"
-                label="Search users..."
-                single-line
-                hide-details
-                clearable
-              />
-            </v-col>
-          </v-row>
-        </template>
+      <!-- Search Field -->
+      <v-row class="mb-4">
+        <v-col cols="12" md="6">
+          <v-text-field
+            v-model="search"
+            prepend-inner-icon="mdi-magnify"
+            label="Search users..."
+            single-line
+            hide-details
+            clearable
+            variant="outlined"
+          />
+        </v-col>
+      </v-row>
 
-        <template v-slot:item.role_id="{ item }">
-          <v-chip
-            :color="getRoleColor(item.role_id)"
-            variant="tonal"
-            size="small"
+      <!-- Loading State -->
+      <div v-if="loading" class="text-center pa-8">
+        <v-progress-circular
+          indeterminate
+          color="primary"
+          size="64"
+        />
+        <p class="text-h6 mt-4">Loading users...</p>
+      </div>
+
+      <!-- No Users State -->
+      <div v-else-if="filteredUsers.length === 0" class="text-center pa-8">
+        <v-icon size="64" color="grey">mdi-account-off</v-icon>
+        <p class="text-h6 mt-4">No users found</p>
+        <p class="text-body-2 text-grey">
+          {{ search ? 'No users match your search criteria.' : 'There are no users in the system yet.' }}
+        </p>
+      </div>
+
+      <!-- User Cards Grid -->
+      <v-row v-else>
+        <v-col
+          v-for="user in filteredUsers"
+          :key="user.id"
+          cols="12"
+          sm="6"
+          lg="4"
+          xl="3"
+        >
+          <v-card
+            class="user-card"
+            variant="outlined"
+            hover
+            :elevation="2"
           >
-            {{ getRoleTitle(item.role_id, rolesStore.roles) }}
-          </v-chip>
-        </template>
+            <v-card-title class="d-flex align-center pa-4">
+              <v-avatar
+                :color="getRoleColor(user.role_id)"
+                size="40"
+                class="me-3"
+              >
+                <v-icon color="white">mdi-account</v-icon>
+              </v-avatar>
+              <div class="flex-grow-1">
+                <div class="text-h6 text-truncate">
+                  {{ user.full_name || 'Unknown User' }}
+                </div>
+                <div class="text-body-2 text-grey text-truncate">
+                  {{ user.email }}
+                </div>
+              </div>
+            </v-card-title>
 
+            <v-card-text class="pt-0">
+              <v-row dense>
+                <v-col cols="12" class="pb-2">
+                  <v-chip
+                    :color="getRoleColor(user.role_id)"
+                    variant="tonal"
+                    size="small"
+                    block
+                  >
+                    {{ getRoleTitle(user.role_id, rolesStore.roles) }}
+                  </v-chip>
+                </v-col>
 
+                <v-col cols="12">
+                  <div class="d-flex align-center">
+                    <v-icon size="16" color="grey" class="me-2">mdi-calendar</v-icon>
+                    <span class="text-body-2 text-grey">
+                      Created: {{ formatDate(user.created_at) }}
+                    </span>
+                  </div>
+                </v-col>
+              </v-row>
+            </v-card-text>
 
-        <template v-slot:item.created_at="{ item }">
-          {{ formatDate(item.created_at) }}
-        </template>
+            <v-card-actions class="pt-0 px-4 pb-4">
+              <v-btn
+                variant="text"
+                size="small"
+                @click="viewUser(user)"
+                prepend-icon="mdi-eye"
+              >
+                View
+              </v-btn>
 
-        <template v-slot:item.actions="{ item }">
-          <v-btn
-            icon="mdi-eye"
-            variant="text"
-            size="small"
-            @click="viewUser(item)"
-          >
-          </v-btn>
-          <v-btn
-            icon="mdi-pencil"
-            variant="text"
-            size="small"
-            @click="editUser(item)"
-            color="primary"
-          >
-          </v-btn>
-          <v-btn
-            icon="mdi-delete"
-            variant="text"
-            size="small"
-            @click="deleteUser(item)"
-            color="error"
-          >
-          </v-btn>
-        </template>
+              <v-btn
+                variant="text"
+                size="small"
+                color="primary"
+                @click="editUser(user)"
+                prepend-icon="mdi-pencil"
+              >
+                Edit
+              </v-btn>
 
-        <template v-slot:no-data>
-          <div class="text-center pa-4">
-            <v-icon size="64" color="grey">mdi-account-off</v-icon>
-            <p class="text-h6 mt-4">No users found</p>
-            <p class="text-body-2 text-grey">There are no users in the system yet.</p>
-          </div>
-        </template>
-
-        <template v-slot:loading>
-          <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
-        </template>
-      </v-data-table>
+              <v-btn
+                variant="text"
+                size="small"
+                color="error"
+                @click="deleteUser(user)"
+                prepend-icon="mdi-delete"
+              >
+                Delete
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
     </v-card-text>
 
     <!-- User Details Dialog -->
@@ -230,11 +277,26 @@ onMounted(async () => {
       :user="userToDelete"
       @user-deleted="onUserDeleted"
     />
-  </v-card>
+  </div>
 </template>
 
 <style scoped>
 .v-card-title h3 {
   margin-bottom: 4px;
+}
+
+.user-card {
+  transition: transform 0.2s ease-in-out;
+  border-radius: 12px;
+}
+
+.user-card:hover {
+  transform: translateY(-2px);
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>
