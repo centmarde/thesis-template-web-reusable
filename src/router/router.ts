@@ -9,6 +9,7 @@ import ForbiddenView from "@/pages/ForbiddenView.vue";
 import AdminUserRolesView from "@/pages/admin/AdminUserRolesView.vue";
 import UserManagementView from "@/pages/admin/UserManagementView.vue";
 import AnnouncementsView from "@/pages/admin/AnnouncementsView.vue";
+import SettingsView from "@/pages/account/SettingsView.vue";
 
 /**
  * Route definitions for the application
@@ -26,6 +27,11 @@ const routes = setupLayouts([
   {
     path: "/account/home",
     component: Dashboard,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/account/settings",
+    component: SettingsView,
     meta: { requiresAuth: true },
   },
   {
