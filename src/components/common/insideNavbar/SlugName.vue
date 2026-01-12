@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 import { useAuthUserStore } from '@/stores/authUser'
-import { createDisplaySlugName, getEmailInitials } from '@/utils/helpers'
+import { createDisplaySlugName, getEmailInitials, getRoleText, getRoleColor } from '@/utils/helpers'
 
 const authStore = useAuthUserStore()
 
@@ -12,6 +12,9 @@ const menu = ref(false)
 const userEmail = computed(() => authStore.userEmail)
 const displayName = computed(() => createDisplaySlugName(userEmail.value))
 const userInitials = computed(() => getEmailInitials(userEmail.value))
+const userRole = computed(() => authStore.userRole)
+const userRoleText = computed(() => getRoleText(userRole.value))
+const userRoleColor = computed(() => getRoleColor(userRole.value))
 
 // Handle logout
 async function handleLogout() {
@@ -76,6 +79,16 @@ async function handleLogout() {
               </div>
               <div class="text-body-2 text-medium-emphasis">
                 {{ userEmail }}
+              </div>
+              <div class="d-flex align-center mt-1" v-if="userRole">
+                <v-chip
+                  :color="userRoleColor"
+                  size="x-small"
+                  variant="flat"
+                  class="text-caption font-weight-medium"
+                >
+                  {{ userRoleText }}
+                </v-chip>
               </div>
             </div>
           </div>

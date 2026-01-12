@@ -24,6 +24,11 @@ export const navigationConfig: NavigationGroup[] = [
         route: '/account/home',
         permission: 'admin.dashboard.view'
       },
+      {
+        title: 'Settings',
+        icon: 'mdi-cog-outline',
+        route: '/account/settings'
+      },
     ]
   },
   {

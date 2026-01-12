@@ -24,7 +24,7 @@ export const authGuard = async (to: RouteLocationNormalized, from: RouteLocation
   }
 
   // Check role-based page access for authenticated users on protected routes
-  if (isLoggedIn && to.meta.requiresAuth && to.path !== "/account/home") {
+  if (isLoggedIn && to.meta.requiresAuth && !to.path.startsWith("/account/")) {
     try {
       const authStore = useAuthUserStore();
       const pagesStore = useUserPagesStore();

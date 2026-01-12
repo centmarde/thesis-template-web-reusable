@@ -15,7 +15,7 @@ import 'vuetify/styles'
 // Theme will be loaded dynamically from external-page.json
 const vuetify = createVuetify({
   theme: {
-    defaultTheme: 'light',
+    defaultTheme: 'dark',
     themes: {
       light: {
         dark: false,
